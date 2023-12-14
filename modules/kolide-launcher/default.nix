@@ -2,20 +2,20 @@ flake: { config, lib, pkgs, ... }:
 
 let
   inherit (lib) types mkEnableOption mkOption mkIf;
-  inherit (flake.packages.x86_64-linux) launcher;
-  cfg = config.services.launcher;
+  inherit (flake.packages.x86_64-linux) kolide-launcher;
+  cfg = config.services.kolide-launcher;
 in
 {
   imports = [];
 
-  options.services.launcher = {
+  options.services.kolide-launcher = {
     enable = mkEnableOption ''
       Kolide launcher agent.
     '';
   };
 
   config = mkIf cfg.enable {
-    systemd.services.launcher = {
+    systemd.services.kolide-launcher = {
       description = "The Kolide Launcher";
       after = [ "network.service" "syslog.service" ];
       wantedBy = [ "multi-user.target" ];
@@ -29,7 +29,7 @@ in
         mkdir -p /etc/kolide-k2
         echo -n 'secret' > /etc/kolide-k2/secret
 
-        osquerydPath=${flake.packages.x86_64-linux.launcher}/bin/osqueryd
+        osquerydPath=${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd
         tee /etc/kolide-k2/launcher.flags <<EOF
 with_initial_runner
 autoupdate
@@ -46,7 +46,7 @@ EOF
 
       serviceConfig = {
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-        ExecStart = "${flake.packages.x86_64-linux.launcher}/bin/launcher -config /etc/kolide-k2/launcher.flags";
+        ExecStart = "${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher -config /etc/kolide-k2/launcher.flags";
         Restart = "on-failure";
         RestartSec = 3;
       };

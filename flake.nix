@@ -4,10 +4,10 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
 
   outputs = { self, nixpkgs }: {
-    packages.x86_64-linux.launcher =
+    packages.x86_64-linux.kolide-launcher =
       with import nixpkgs { system = "x86_64-linux"; };
       stdenv.mkDerivation {
-        name = "launcher";
+        name = "kolide-launcher";
         version = "1.2.1-11-g8c04686";
 
         src = fetchzip {
@@ -44,8 +44,8 @@
         };
       };
 
-    packages.x86_64-linux.default = self.packages.x86_64-linux.launcher;
+    packages.x86_64-linux.default = self.packages.x86_64-linux.kolide-launcher;
 
-    nixosModules.launcher = import ./modules/launcher self;
+    nixosModules.kolide-launcher = import ./modules/kolide-launcher self;
   };
 }
