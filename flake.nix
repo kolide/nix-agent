@@ -6,13 +6,13 @@
   outputs = { self, nixpkgs }: {
     packages.x86_64-linux.kolide-launcher =
       with import nixpkgs { system = "x86_64-linux"; };
-      stdenv.mkDerivation {
-        name = "kolide-launcher";
-        version = "1.2.1-11-g8c04686";
+      stdenv.mkDerivation rec {
+        pname = "kolide-launcher";
+        version = "1.3.2-3-gd3aa979";
 
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-1.2.1-11-g8c04686.tar.gz";
-          sha256 = "sha256-sNw+c6gASo8vesJ+KOrNkvKEF4iKA3tM3li3vRYEoPc=";
+          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
+          sha256 = "sha256-ohW27Nn1nFqIeyR5zMrP4nOYtJaF+Avt21z2FPIUxLk=";
           name = "launcher";
         };
 
