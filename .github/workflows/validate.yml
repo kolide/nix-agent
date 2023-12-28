@@ -1,0 +1,28 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: '**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - uses: cachix/install-nix-action@v22
+
+    - name: build
+      run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
+
+    - name: check flake
+      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure
+
+    - name: show flake output attributes
+      run: nix flake show
+
+    - name: show flake metadata
+      run: nix flake metadata
