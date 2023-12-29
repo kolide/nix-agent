@@ -1,0 +1,19 @@
+# http://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Nix files: 2 spaces for indents
+[*.nix]
+indent_style = space
+indent_size = 2
+
+# yml workflow files: 2 spaces for indents
+[*.yml]
+indent_style = space
+indent_size = 2
