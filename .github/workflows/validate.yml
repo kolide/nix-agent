@@ -26,3 +26,9 @@ jobs:
 
     - name: show flake metadata
       run: nix flake metadata
+
+    - name: launcher version
+      run: ./result/bin/launcher version
+
+    - name: osqueryd version
+      run: ./result/bin/osqueryd --version
