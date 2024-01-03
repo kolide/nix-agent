@@ -56,15 +56,6 @@ in
 
       path = with pkgs; [ patchelf ];
 
-      preStart = ''
-        mkdir -p ${cfg.rootDirectory}
-
-        if [ ! -d "${cfg.enrollSecretDirectory}" ]; then
-          mkdir -p ${cfg.enrollSecretDirectory}
-          echo -n 'secret' > ${cfg.enrollSecretDirectory}/secret
-        fi
-      '';
-
       serviceConfig = {
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
         ExecStart = ''
@@ -81,5 +72,11 @@ in
         RestartSec = 3;
       };
     };
+
+    systemd.tmpfiles.rules = [
+      "d ${cfg.rootDirectory}                0755 - -"
+      "d ${cfg.enrollSecretDirectory}        0755 - -"
+      "z ${cfg.enrollSecretDirectory}/secret 0600 - -"
+    ];
   };
 }
