@@ -16,7 +16,8 @@ Build the flake with `NIXPKGS_ALLOW_UNFREE=1 nix build --impure`. If all goes we
 you will have a new `result` directory that symlinks to the Nix store location
 `/nix/store/<...>-kolide-launcher`.
 
-Update your `/etc/nixos/configuration.nix` file to include and enable the launcher service:
+Update your `/etc/nixos/configuration.nix` file to include and enable the launcher service;
+adjust other config values as needed:
 
 ```
 { inputs }:
@@ -30,6 +31,9 @@ Update your `/etc/nixos/configuration.nix` file to include and enable the launch
 
   services.kolide-launcher = {
     enable = true;
+    kolideHostname = "k2device-preprod.kolide.com";
+    rootDirectory = "/var/lib/kolide-k2/k2device-preprod.kolide.com";
+    updateChannel = "nightly";
   };
 }
 ```
@@ -63,3 +67,11 @@ Update your `/etc/nixos/flake.nix` file to include `kolide-launcher` in its inpu
 ```
 
 Then rebuild: `sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#my-hostname --impure`.
+
+For now, you'll want to manually create your secret file:
+
+```
+echo -n 'your-enroll-secret-goes-here' | sudo tee /etc/kolide-k2/secret
+```
+
+Then start the `kolide-launcher.service` service.
