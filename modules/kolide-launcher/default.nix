@@ -12,6 +12,40 @@ in
     enable = mkEnableOption ''
       Kolide launcher agent.
     '';
+
+    kolideHostname = mkOption {
+      type = types.str;
+      default = "k2device.kolide.com";
+      description = ''
+        The hostname for the Kolide device management server.
+      '';
+    };
+
+    rootDirectory = mkOption {
+      type = types.path;
+      default = "/var/lib/kolide-k2/k2device.kolide.com";
+      description = ''
+        The path to the directory that will hold launcher-related data,
+        including logs, databases, and autoupdates.
+      '';
+    };
+
+    enrollSecretDirectory = mkOption {
+      type = types.path;
+      default = "/etc/kolide-k2";
+      description = ''
+        The path to the directory where the enrollment secret lives.
+      '';
+    };
+
+    updateChannel = mkOption {
+      type = types.str;
+      default = "stable";
+      description = ''
+        Which release channel the launcher installation should use when autoupdating
+        itself and its osquery installation: one of stable, nightly, beta, or alpha.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -23,30 +57,26 @@ in
       path = with pkgs; [ patchelf ];
 
       preStart = ''
-      mkdir -p /var/lib/kolide-k2/k2device-preprod.kolide.com
+        mkdir -p ${cfg.rootDirectory}
 
-      if [ ! -d "/etc/kolide-k2" ]; then
-        mkdir -p /etc/kolide-k2
-        echo -n 'secret' > /etc/kolide-k2/secret
-
-        osquerydPath=${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd
-        tee /etc/kolide-k2/launcher.flags <<EOF
-with_initial_runner
-autoupdate
-transport jsonrpc
-hostname k2device-preprod.kolide.com
-root_directory /var/lib/kolide-k2/k2device-preprod.kolide.com
-osqueryd_path $osquerydPath
-enroll_secret_path /etc/kolide-k2/secret
-update_channel nightly
-debug
-EOF
-      fi
-'';
+        if [ ! -d "${cfg.enrollSecretDirectory}" ]; then
+          mkdir -p ${cfg.enrollSecretDirectory}
+          echo -n 'secret' > ${cfg.enrollSecretDirectory}/secret
+        fi
+      '';
 
       serviceConfig = {
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-        ExecStart = "${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher -config /etc/kolide-k2/launcher.flags";
+        ExecStart = ''
+          ${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher \
+            --hostname ${cfg.kolideHostname} \
+            --root_directory ${cfg.rootDirectory} \
+            --osqueryd_path ${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd \
+            --enroll_secret_path ${cfg.enrollSecretDirectory}/secret \
+            --update_channel ${cfg.updateChannel} \
+            --transport jsonrpc \
+            --autoupdate
+        '';
         Restart = "on-failure";
         RestartSec = 3;
       };
