@@ -57,8 +57,7 @@ in
       # Hard requirements should go in list; optional requirements should be added as optional.
       # Intentionally not included because they aren't supported on Nix:
       # CrowdStrike (falconctl, falcon-kernel-check), Carbon Black (repcli), dnf (dnf5 is available),
-      # x-www-browser (symlink created via `update-alternatives`, which isn't available),
-      # ifconfig (should be available via net-tools, but this fails with "undefined variable 'net-tools'", :shrug:)
+      # x-www-browser (symlink created via `update-alternatives`, which isn't available)
       path = with pkgs; [
         patchelf # Required to auto-update successfully
         systemd # Provides loginctl, systemctl; loginctl required to run desktop
@@ -73,6 +72,7 @@ in
       ++ optional (builtins.elem iproute2 config.environment.systemPackages) iproute2 # Provides ip
       ++ optional (builtins.elem libnotify config.environment.systemPackages) libnotify # Provides notify-send
       ++ optional (builtins.elem lsof config.environment.systemPackages) lsof
+      ++ optional (builtins.elem nettools config.environment.systemPackages) nettools # Provides ifconfig
       ++ optional (builtins.elem networkmanager config.environment.systemPackages) networkmanager # Provides nmcli
       ++ optional (builtins.elem pacman config.environment.systemPackages) pacman
       ++ optional (builtins.elem procps config.environment.systemPackages) procps # Provides ps
