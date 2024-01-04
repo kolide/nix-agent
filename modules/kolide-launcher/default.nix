@@ -1,7 +1,7 @@
 flake: { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) types mkEnableOption mkOption mkIf;
+  inherit (lib) types mkEnableOption mkOption mkIf optional;
   inherit (flake.packages.x86_64-linux) kolide-launcher;
   cfg = config.services.kolide-launcher;
 in
@@ -54,10 +54,36 @@ in
       after = [ "network.service" "syslog.service" ];
       wantedBy = [ "multi-user.target" ];
 
-      path = with pkgs; [ patchelf ];
+      # Hard requirements should go in list; optional requirements should be added as optional.
+      # Intentionally not included because they aren't supported on Nix:
+      # CrowdStrike (falconctl, falcon-kernel-check), Carbon Black (repcli), dnf (dnf5 is available),
+      # x-www-browser (symlink created via `update-alternatives`, which isn't available),
+      # ifconfig (should be available via net-tools, but this fails with "undefined variable 'net-tools'", :shrug:)
+      path = with pkgs; [
+        patchelf # Required to auto-update successfully
+        systemd # Provides loginctl, systemctl; loginctl required to run desktop
+        xdg-utils # Provides xdg-open, required to open browser from notifications and menu bar app
+      ]
+      ++ optional (builtins.elem apt config.environment.systemPackages) apt
+      ++ optional (builtins.elem cryptsetup config.environment.systemPackages) cryptsetup
+      ++ optional (builtins.elem coreutils-full config.environment.systemPackages) coreutils-full # Provides echo
+      ++ optional (builtins.elem dpkg config.environment.systemPackages) dpkg
+      ++ optional (builtins.elem glib config.environment.systemPackages) glib # Provides gsettings
+      ++ optional (builtins.elem gnome.gnome-shell config.environment.systemPackages) gnome.gnome-shell # Provides gnome-extensions
+      ++ optional (builtins.elem iproute2 config.environment.systemPackages) iproute2 # Provides ip
+      ++ optional (builtins.elem libnotify config.environment.systemPackages) libnotify # Provides notify-send
+      ++ optional (builtins.elem lsof config.environment.systemPackages) lsof
+      ++ optional (builtins.elem networkmanager config.environment.systemPackages) networkmanager # Provides nmcli
+      ++ optional (builtins.elem pacman config.environment.systemPackages) pacman
+      ++ optional (builtins.elem procps config.environment.systemPackages) procps # Provides ps
+      ++ optional (builtins.elem rpm config.environment.systemPackages) rpm
+      ++ optional (builtins.elem xorg.xrdb config.environment.systemPackages) xorg.xrdb # Provides xrdb
+      ++ optional (builtins.elem util-linux config.environment.systemPackages) util-linux # Provides lsblk
+      ++ optional (builtins.elem zerotierone config.environment.systemPackages) zerotierone # Provides zerotier-cli
+      ++ optional (builtins.elem zfs config.environment.systemPackages) zfs # Provides zfs, zpool
+      ;
 
       serviceConfig = {
-        Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
         ExecStart = ''
           ${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher \
             --hostname ${cfg.kolideHostname} \
