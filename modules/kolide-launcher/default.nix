@@ -56,8 +56,10 @@ in
 
       # Hard requirements should go in list; optional requirements should be added as optional.
       # Intentionally not included because they aren't supported on Nix:
-      # CrowdStrike (falconctl, falcon-kernel-check), Carbon Black (repcli), dnf (dnf5 is available),
-      # x-www-browser (symlink created via `update-alternatives`, which isn't available)
+      # - CrowdStrike (falconctl, falcon-kernel-check)
+      # - Carbon Black (repcli)
+      # - dnf (related libraries dnf5, libdnf, and microdnf are available, but nothing provides the dnf binary)
+      # - x-www-browser (symlink created via `update-alternatives`, which isn't available)
       path = with pkgs; [
         patchelf # Required to auto-update successfully
         systemd # Provides loginctl, systemctl; loginctl required to run desktop
