@@ -21,7 +21,7 @@ jobs:
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
 
     - name: check flake (runs tests)
-      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure
+      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --verbose --debug
 
     - name: show flake output attributes
       run: nix flake show
