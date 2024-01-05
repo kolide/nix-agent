@@ -47,5 +47,7 @@
     packages.x86_64-linux.default = self.packages.x86_64-linux.kolide-launcher;
 
     nixosModules.kolide-launcher = import ./modules/kolide-launcher self;
+
+    checks.x86_64-linux.kolide-launcher = import ./tests/kolide-launcher.nix { flake = self; };
   };
 }
