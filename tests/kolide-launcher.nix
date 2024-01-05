@@ -24,11 +24,18 @@ pkgs.nixosTest {
   testScript = { nodes, ... }: ''
     machine.start()
 
-    with subtest("launcher starts"):
-      machine.wait_for_file("/var/lib/kolide-k2/k2device.kolide.com/debug.json")
+    # TODO: currently launcher will shut itself down if its secret file doesn't exist,
+    # so we don't get all the way through setup and launcher doesn't stay running.
+    # In the future, we'll want to validate setup and that the service is running.
 
     with subtest("kolide-launcher service starts"):
       machine.wait_for_unit("kolide-launcher.service")
+      machine.systemctl("status kolide-launcher.service")
+
+    machine.screenshot("test.png")
+
+    with subtest("launcher set up correctly"):
+      machine.wait_for_file("/var/lib/kolide-k2/k2device.kolide.com/debug.json")
 
     machine.shutdown()
   '';

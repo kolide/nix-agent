@@ -9,6 +9,9 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    outputs:
+      drvpath: ${{ steps.test-derivation.outputs.drvpath }}
+
     steps:
 
     - uses: actions/checkout@v3
@@ -22,6 +25,18 @@ jobs:
 
     - name: check flake (runs tests)
       run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
+    
+    - name: get test derivation path
+      id: test-derivation
+      run: |
+        drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
+        echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
+    
+    - name: upload test screenshot
+      uses: actions/upload-artifact@v4
+      with:
+        path: ${{ steps.test-derivation.outputs.drvpath }}/test.png
+        retention-days: 1
 
     - name: show flake output attributes
       run: nix flake show
