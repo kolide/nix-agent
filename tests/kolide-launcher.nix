@@ -24,7 +24,12 @@ pkgs.nixosTest {
   testScript = { nodes, ... }: ''
     machine.start()
 
+    with subtest("launcher starts"):
+      machine.wait_for_file("/var/lib/kolide-k2/k2device.kolide.com/debug.json")
+
     with subtest("kolide-launcher service starts"):
       machine.wait_for_unit("kolide-launcher.service")
+
+    machine.shutdown()
   '';
 }
