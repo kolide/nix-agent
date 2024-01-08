@@ -9,20 +9,42 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    outputs:
+      drvpath: ${{ steps.test-derivation.outputs.drvpath }}
+
     steps:
 
     - uses: actions/checkout@v3
 
     - uses: cachix/install-nix-action@v22
+      with:
+        extra_nix_config: "system-features = nixos-test benchmark big-parallel kvm"
+        nix_path: nixpkgs=channel:nixos-23.05
 
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
 
-    - name: check flake
-      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure
+    - name: check flake (runs tests)
+      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
+      timeout-minutes: 15
+    
+    - name: get test derivation path
+      id: test-derivation
+      if: always()
+      run: |
+        drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
+        echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
+    
+    - name: upload test screenshot
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-screenshot
+        path: ${{ steps.test-derivation.outputs.drvpath }}/test.png
+        retention-days: 1
 
     - name: show flake output attributes
-      run: nix flake show
+      run: nix flake show --impure
 
     - name: show flake metadata
       run: nix flake metadata
