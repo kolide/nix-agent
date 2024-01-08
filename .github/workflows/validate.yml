@@ -44,7 +44,7 @@ jobs:
         retention-days: 1
 
     - name: show flake output attributes
-      run: nix flake show
+      run: nix flake show --impure
 
     - name: show flake metadata
       run: nix flake metadata
