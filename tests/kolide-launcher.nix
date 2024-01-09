@@ -51,13 +51,9 @@ pkgs.nixosTest {
       # so we don't get all the way through setup and launcher doesn't stay running.
       # In the future, we'll want to validate setup and that the service is running.
 
-      with subtest("kolide-launcher service starts"):
-        machine.wait_for_unit("kolide-launcher.service")
-        machine.sleep(10)
-        machine.systemctl("stop kolide-launcher.service")
-
       with subtest("launcher set up correctly"):
         machine.wait_for_file("/var/lib/kolide-k2/k2device.kolide.com/debug.json")
+        machine.systemctl("stop kolide-launcher.service")
 
       with subtest("get a screenshot"):
         machine.wait_for_unit("display-manager.service")
