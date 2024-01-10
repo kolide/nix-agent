@@ -38,9 +38,13 @@
           homepage = "https://www.kolide.com";
           description = "Kolide Endpoint Agent";
           platforms = [ "x86_64-linux" ];
-          license = licenses.unfree;
+          license = {
+            fullName = "The Kolide Enterprise Edition (EE) license";
+            url = "https://github.com/kolide/launcher/blob/main/LICENSE";
+            free = false;
+            redistributable = false;
+          };
           sourceProvenance = with sourceTypes; [ binaryNativeCode ];
-          maintainers = with stdenv.lib.maintainers; [ RebeccaMahany ];
         };
       };
 
