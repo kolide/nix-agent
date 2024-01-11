@@ -32,7 +32,7 @@ adjust other config values as needed:
   services.kolide-launcher = {
     enable = true;
     kolideHostname = "k2device-preprod.kolide.com";
-    rootDirectory = "/var/lib/kolide-k2/k2device-preprod.kolide.com";
+    rootDirectory = "/var/kolide-k2/k2device-preprod.kolide.com";
     updateChannel = "nightly";
   };
 }

@@ -57,7 +57,7 @@ pkgs.nixosTest {
         machine.systemctl("stop kolide-launcher.service")
 
       with subtest("launcher set up correctly"):
-        machine.wait_for_file("/var/lib/kolide-k2/k2device.kolide.com/debug.json")
+        machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
 
       with subtest("get a screenshot"):
         machine.wait_for_unit("display-manager.service")
