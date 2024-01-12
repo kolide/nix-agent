@@ -23,7 +23,7 @@ in
 
     rootDirectory = mkOption {
       type = types.path;
-      default = "/var/lib/kolide-k2/k2device.kolide.com";
+      default = "/var/kolide-k2/k2device.kolide.com";
       description = ''
         The path to the directory that will hold launcher-related data,
         including logs, databases, and autoupdates.
