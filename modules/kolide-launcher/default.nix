@@ -57,6 +57,11 @@ in
       path = with pkgs; [ patchelf ];
 
       serviceConfig = {
+        # The Kolide agent needs to be able to find various executables by looking them up in PATH.
+        # We cannot hardcode a list of packages in systemd.services.kolide-launcher.path because future
+        # autoupdated versions of launcher may need to access new executables not listed in this originally-installed
+        # module. So, until we have a better option, we give the kolide-launcher unit access to the symlinks
+        # in `/run/current-system/sw/bin` and other likely locations that will allow it to find software inside the Nix store.
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
         ExecStart = ''
           ${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher \
