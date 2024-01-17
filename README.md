@@ -80,4 +80,4 @@ Then start the `kolide-launcher.service` service.
 
 [NixOS tests](https://nixos.org/manual/nixos/stable/index.html#sec-nixos-tests)
 live in the [./tests](./tests) directory and are included via flake checks.
-They are able to be run via the `nix flake check` command.
+They are currently intended to run in CI only.
