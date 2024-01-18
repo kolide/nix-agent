@@ -12,7 +12,7 @@
 
         src = fetchzip {
           url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-          sha256 = "";
+          sha256 = "sha256-loz4xpBB5v2M1TSETmL2qr66qiq2tavn5CW+jR4vyd8=";
           name = "launcher";
         };
 
