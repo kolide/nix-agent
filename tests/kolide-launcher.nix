@@ -32,6 +32,7 @@ pkgs.nixosTest {
       };
     };
     services.xserver.desktopManager.mate.enable = true;
+    services.xserver.desktopManager.mate.debug = true;
 
     # This just quiets some log spam we don't care about
     hardware.pulseaudio.enable = true;
@@ -40,41 +41,53 @@ pkgs.nixosTest {
     system.stateVersion = "23.11";
   };
 
+  enableOCR = true;
+
   testScript = { nodes, ... }:
     let
       user = nodes.machine.users.users.alice;
+      uid = toString user.uid;
+      xauthority = "${user.home}/.Xauthority";
+      ci = builtins.getEnv "CI";
     in
     ''
-      machine.start()
+      if "${ci}":
+        machine.start()
 
-      # TODO: currently launcher will shut itself down if its secret file doesn't exist,
-      # so we don't get all the way through setup and launcher doesn't stay running.
-      # In the future, we'll want to validate setup and that the service is running.
+        with subtest("log in to MATE"):
+          machine.wait_for_unit("display-manager.service", timeout=120)
+          machine.wait_for_file("${xauthority}")
+          machine.succeed("xauth merge ${xauthority}")
+          machine.wait_until_succeeds("pgrep marco")
+          machine.wait_for_window("marco")
+          machine.wait_until_succeeds("pgrep mate-panel")
+          machine.wait_for_window("Top Panel")
+          machine.wait_for_window("Bottom Panel")
+          machine.wait_until_succeeds("pgrep caja")
+          machine.wait_for_window("Caja")
+          machine.sleep(20)
+          machine.screenshot("test-screen1.png")
 
-      with subtest("kolide-launcher service starts"):
-        machine.wait_for_unit("kolide-launcher.service")
-        machine.sleep(10)
-        machine.systemctl("stop kolide-launcher.service")
+        with subtest("set up secret file"):
+          machine.copy_from_host("${./test-secret}", "/etc/kolide-k2/secret")
 
-      with subtest("launcher set up correctly"):
-        machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
+        with subtest("launcher service runs and is set up correctly"):
+          machine.systemctl("stop kolide-launcher.service")
+          machine.systemctl("start kolide-launcher.service")
+          machine.wait_for_unit("kolide-launcher.service", timeout=120)
+          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
+          machine.sleep(60)
+          machine.screenshot("test-screen2.png")
 
-      with subtest("get a screenshot"):
-        machine.wait_for_unit("display-manager.service")
+        with subtest("osquery runs"):
+          machine.wait_until_succeeds("pgrep osqueryd", timeout=30)
+          machine.screenshot("test-screen3.png")
 
-        machine.wait_for_file("${user.home}/.Xauthority")
-        machine.succeed("xauth merge ${user.home}/.Xauthority")
+        with subtest("launcher desktop runs (test incomplete for now)"):
+          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/kolide.png")
+          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
+          machine.screenshot("test-screen4.png")
 
-        machine.wait_until_succeeds("pgrep marco")
-        machine.wait_for_window("marco")
-        machine.wait_until_succeeds("pgrep mate-panel")
-        machine.wait_for_window("Top Panel")
-        machine.wait_for_window("Bottom Panel")
-        machine.wait_until_succeeds("pgrep caja")
-        machine.wait_for_window("Caja")
-        machine.sleep(20)
-        machine.screenshot("test.png")
-
-      machine.shutdown()
+        machine.shutdown()
     '';
 }

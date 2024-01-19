@@ -24,10 +24,17 @@ jobs:
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
 
+    - name: set up test secret
+      run: |
+        mv ./tests/test-secret ./tests/test-secret.bak
+        echo -n "${{ secrets.NABALU_ENROLL_SECRET }}" | tee ./tests/test-secret
+
     - name: check flake (runs tests)
       run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
       timeout-minutes: 15
-    
+      env:
+        CI: "true"
+
     - name: get test derivation path
       id: test-derivation
       if: always()
@@ -35,12 +42,12 @@ jobs:
         drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
         echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
     
-    - name: upload test screenshot
+    - name: upload test screenshots
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-screenshot
-        path: ${{ steps.test-derivation.outputs.drvpath }}/test.png
+        name: test-screenshots
+        path: ${{ steps.test-derivation.outputs.drvpath }}/test-*.png
         retention-days: 1
 
     - name: show flake output attributes
@@ -54,3 +61,7 @@ jobs:
 
     - name: osqueryd version
       run: ./result/bin/osqueryd --version
+
+    - name: clean up after tests
+      if: always()
+      run: mv ./tests/test-secret.bak ./tests/test-secret
