@@ -46,6 +46,22 @@ in
         itself and its osquery installation: one of stable, nightly, beta, or alpha.
       '';
     };
+
+    autoupdateInterval = mkOption {
+      type = types.str;
+      default = "1h";
+      description = ''
+        The interval to check for launcher and osqueryd updates.
+      '';
+    };
+
+    autoupdaterInitialDelay = mkOption {
+      type = types.str;
+      default = "1h";
+      description = ''
+        Initial autoupdater subprocess delay.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -71,7 +87,9 @@ in
             --enroll_secret_path ${cfg.enrollSecretDirectory}/secret \
             --update_channel ${cfg.updateChannel} \
             --transport jsonrpc \
-            --autoupdate
+            --autoupdate \
+            --autoupdate_interval ${cfg.autoupdateInterval} \
+            --autoupdater_initial_delay ${cfg.autoupdaterInitialDelay}
         '';
         Restart = "on-failure";
         RestartSec = 3;

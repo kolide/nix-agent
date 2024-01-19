@@ -19,7 +19,7 @@ jobs:
     - uses: cachix/install-nix-action@v22
       with:
         extra_nix_config: "system-features = nixos-test benchmark big-parallel kvm"
-        nix_path: nixpkgs=channel:nixos-23.05
+        nix_path: nixpkgs=channel:nixos-23.11
 
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
