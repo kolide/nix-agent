@@ -45,7 +45,7 @@ pkgs.nixosTest {
 
   testScript = { nodes, ... }:
     let
-      user = nodes.machine.config.users.users.alice;
+      user = nodes.machine.users.users.alice;
       uid = toString user.uid;
       xauthority = "${user.home}/.Xauthority";
     in
