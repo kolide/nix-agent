@@ -92,7 +92,7 @@ pkgs.nixosTest {
 
         print(machine.get_screen_text())
 
-        machine.wait_until_succeeds("pgrep -U ${uid} launcher")
+        machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
         machine.screenshot("test-screen5.png")
       '''
 
