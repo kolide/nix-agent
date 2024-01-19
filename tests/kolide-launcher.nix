@@ -3,7 +3,7 @@
 let
   nixpkgs = builtins.fetchTarball {
     url = "https://github.com/nixOS/nixpkgs/archive/23.11.tar.gz";
-    sha256 = "sha256-uQvEhiv33Zj/Pv364dTvnpPwFSptRZgVedDzoM+HqVg=";
+    sha256 = "sha256:1ndiv385w1qyb3b18vw13991fzb9wg4cl21wglk89grsfsnra41k";
   };
   pkgs = import nixpkgs { config = {}; overlays = []; };
 in
