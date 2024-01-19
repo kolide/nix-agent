@@ -1,18 +1,18 @@
 {
   description = "Kolide launcher";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
 
   outputs = { self, nixpkgs }: {
     packages.x86_64-linux.kolide-launcher =
       with import nixpkgs { system = "x86_64-linux"; };
       stdenv.mkDerivation rec {
         pname = "kolide-launcher";
-        version = "1.4.0";
+        version = "1.4.4-6-g33c6fd9";
 
         src = fetchzip {
           url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-          sha256 = "sha256-oOkXlz9n88szZC5TDYiroFeYZ84b1AFeUN1rInwRXrU=";
+          sha256 = "sha256-loz4xpBB5v2M1TSETmL2qr66qiq2tavn5CW+jR4vyd8=";
           name = "launcher";
         };
 

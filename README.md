@@ -4,7 +4,7 @@ Packages [kolide/launcher](https://github.com/kolide/launcher) for Nix.
 
 ## Developing and testing in a VM
 
-Create a VM using a NixOS 23.05 image with flakes enabled and SSH to the new VM.
+Create a VM using a NixOS 23.11 image with flakes enabled and SSH to the new VM.
 
 Make a directory for the launcher flake and copy your changes to `flake.nix` and `flake.lock` into it.
 Make the subdirectory `modules/kolide-launcher` and copy your changes to `default.nix` into it.
