@@ -42,11 +42,11 @@ jobs:
         drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
         echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
     
-    - name: upload test screenshot
+    - name: upload test screenshots
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-screenshot
+        name: test-screenshots
         path: ${{ steps.test-derivation.outputs.drvpath }}/test-*.png
         retention-days: 1
 
