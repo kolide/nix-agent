@@ -1,7 +1,7 @@
 {
   description = "Kolide launcher";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
 
   outputs = { self, nixpkgs }: {
     packages.x86_64-linux.kolide-launcher =

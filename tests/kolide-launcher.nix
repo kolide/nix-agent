@@ -2,8 +2,8 @@
 
 let
   nixpkgs = builtins.fetchTarball {
-    url = "https://github.com/nixOS/nixpkgs/archive/23.05.tar.gz";
-    sha256 = "sha256:10wn0l08j9lgqcw8177nh2ljrnxdrpri7bp0g7nvrsn9rkawvlbf"; 
+    url = "https://github.com/nixOS/nixpkgs/archive/23.11.tar.gz";
+    sha256 = "sha256-uQvEhiv33Zj/Pv364dTvnpPwFSptRZgVedDzoM+HqVg=";
   };
   pkgs = import nixpkgs { config = {}; overlays = []; };
 in
@@ -37,7 +37,7 @@ pkgs.nixosTest {
     hardware.pulseaudio.enable = true;
 
     services.kolide-launcher.enable = true;
-    system.stateVersion = "23.05";
+    system.stateVersion = "23.11";
   };
 
   testScript = { nodes, ... }:
