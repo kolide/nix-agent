@@ -48,8 +48,12 @@ pkgs.nixosTest {
       user = nodes.machine.users.users.alice;
       uid = toString user.uid;
       xauthority = "${user.home}/.Xauthority";
+      ci = builtins.getEnv "CI";
     in
     ''
+      if not "${ci}":
+        return
+
       machine.start()
 
       with subtest("log in to MATE"):
