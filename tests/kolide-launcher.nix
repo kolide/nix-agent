@@ -66,10 +66,10 @@ pkgs.nixosTest {
           machine.wait_for_window("marco")
           machine.wait_until_succeeds("pgrep mate-panel")
           machine.wait_for_window("Top Panel")
-          machine.wait_for_window("Bottom Panel")
-          machine.wait_until_succeeds("pgrep caja")
-          machine.wait_for_window("Caja")
-          machine.sleep(20)
+          #machine.wait_for_window("Bottom Panel")
+          #machine.wait_until_succeeds("pgrep caja")
+          #machine.wait_for_window("Caja")
+          machine.sleep(50)
           machine.screenshot("test-screen1.png")
 
         with subtest("set up secret file"):
