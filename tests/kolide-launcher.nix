@@ -89,7 +89,7 @@ pkgs.nixosTest {
           machine.screenshot("test-screen4.png")
 
         with subtest("launcher flare"):
-          launcher_find_status, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher") # empty
+          launcher_find_status, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           print(launcher_find_status)
           print(launcher_find_stdout)
           launcher_path = launcher_find_stdout + "/bin/launcher"
