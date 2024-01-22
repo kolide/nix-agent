@@ -88,6 +88,25 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
+        with subtest("launcher flare"):
+          launcher_find_status, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide_launcher")
+          print(launcher_find_status)
+          print(launcher_find_stdout)
+          launcher_path = launcher_find_stdout + "/bin/launcher"
+          doctor_status, doctor_stdout = machine.execute(launcher_path + " doctor")
+          print(doctor_status)
+          print(doctor_stdout)
+          flare_status, flare_stdout = machine.execute(launcher_path + " flare --save local")
+          print(flare_status)
+          print(flare_stdout)
+          pwd_status, pwd_out = machine.execute("pwd")
+          print(pwd_status)
+          print(pwd_out)
+          ls_status, ls_out = machine.execute("ls ./")
+          print(ls_status)
+          print(ls_out)
+          machine.copy_from_vm("./kolide_agent_flare_report_*.zip", "./")
+
         with subtest("launcher troubleshooting"):
           machine.systemctl("restart kolide-launcher.service")
           machine.sleep(15)
