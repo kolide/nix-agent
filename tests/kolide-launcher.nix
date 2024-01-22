@@ -90,15 +90,7 @@ pkgs.nixosTest {
 
         with subtest("launcher flare"):
           _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
-          print(launcher_find_stdout)
           launcher_path = "/nix/store/" + launcher_find_stdout.strip() + "/bin/launcher"
-
-          ls_launcher_status1, ls_launcher_out1 = machine.execute("ls " + "/nix/store/" + launcher_find_stdout.strip())
-          print(ls_launcher_status1)
-          print(ls_launcher_out1)
-          ls_launcher_status2, ls_launcher_out2 = machine.execute("ls " + "/nix/store/" + launcher_find_stdout.strip() + "/bin")
-          print(ls_launcher_status2)
-          print(ls_launcher_out2)
 
           doctor_status, doctor_stdout = machine.execute(launcher_path + " doctor")
           print(doctor_status)
@@ -108,14 +100,11 @@ pkgs.nixosTest {
           print(flare_status)
           print(flare_stdout)
 
-          pwd_status, pwd_out = machine.execute("pwd")
-          print(pwd_status)
-          print(pwd_out)
-          ls_status, ls_out = machine.execute("ls ./")
-          print(ls_status)
-          print(ls_out)
+          flare_ls_status, flare_ls_out = machine.execute("ls ./kolide_agent_flare_report_*.zip")
+          print(flare_ls_status)
+          print(flare_ls_out)
 
-          machine.copy_from_vm("./kolide_agent_flare_report_*.zip", "./")
+          machine.copy_from_vm(flare_ls_out, "./")
 
         with subtest("launcher troubleshooting"):
           root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device-preprod.kolide.com/")
