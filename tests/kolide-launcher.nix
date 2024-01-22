@@ -88,6 +88,14 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
+        with subtest("launcher troubleshooting"):
+          machine.systemctl("restart kolide-launcher.service")
+          machine.sleep(15)
+          status, stdout = machine.execute("journalctl --unit=kolide-launcher.service -n 100 --no-pager")
+          print(status)
+          print(stdout)
+          print(machine.get_screen_text())
+
         machine.shutdown()
     '';
 }
