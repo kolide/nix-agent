@@ -39,8 +39,6 @@ pkgs.nixosTest {
 
     services.kolide-launcher.enable = true;
     services.kolide-launcher.kolideHostname = "k2device-preprod.kolide.com";
-    services.kolide-launcher.rootDirectory = "/var/kolide-k2/k2device-preprod.kolide.com";
-    services.kolide-launcher.updateChannel = "nightly";
 
     system.stateVersion = "23.11";
   };
@@ -102,7 +100,7 @@ pkgs.nixosTest {
           machine.copy_from_vm(flare_path, "./")
 
         with subtest("launcher troubleshooting"):
-          root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device-preprod.kolide.com/")
+          root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device.kolide.com/")
           print(root_status)
           print(root_stdout)
 
