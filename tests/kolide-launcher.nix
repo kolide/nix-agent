@@ -105,11 +105,11 @@ pkgs.nixosTest {
           print(flare_status)
           print(flare_stdout)
 
-          flare_ls_status, flare_ls_out = machine.execute("ls ./kolide_agent_flare_report_*.zip")
-          print(flare_ls_status)
-          print(flare_ls_out)
-
-          machine.copy_from_vm(flare_ls_out, "./")
+          # copy_from_vm can't take a wildcard path, so find the exact path before copying
+          _, flare_ls_out = machine.execute("ls ./kolide_agent_flare_report_*.zip")
+          flare_path = "./" + flare_ls_out.strip()
+          print(flare_path) # TODO RM
+          machine.copy_from_vm(flare_path, "./")
 
         with subtest("launcher troubleshooting"):
           root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device-preprod.kolide.com/")
