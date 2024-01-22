@@ -55,7 +55,7 @@ jobs:
       if: always()
       with:
         name: test-flare
-        path: ./kolide_agent_flare_report_*.zip
+        path: ${{ steps.test-derivation.outputs.drvpath }}/kolide_agent_flare_report_*.zip
         retention-days: 1
 
     - name: show flake output attributes
