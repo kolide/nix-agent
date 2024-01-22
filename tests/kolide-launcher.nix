@@ -37,7 +37,12 @@ pkgs.nixosTest {
     # This just quiets some log spam we don't care about
     hardware.pulseaudio.enable = true;
 
-    services.kolide-launcher.enable = true;
+    services.kolide-launcher = {
+      enable = true;
+      kolideHostname = "k2device-preprod.kolide.com";
+      rootDirectory = "/var/kolide-k2/k2device-preprod.kolide.com";
+      updateChannel = "nightly";
+    };
     system.stateVersion = "23.11";
   };
 
