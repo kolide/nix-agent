@@ -108,6 +108,10 @@ pkgs.nixosTest {
           machine.copy_from_vm("./kolide_agent_flare_report_*.zip", "./")
 
         with subtest("launcher troubleshooting"):
+          root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device-preprod.kolide.com/")
+          print(root_status)
+          print(root_stdout)
+
           machine.systemctl("restart kolide-launcher.service")
           machine.sleep(15)
           status, stdout = machine.execute("journalctl --unit=kolide-launcher.service -n 100 --no-pager")
