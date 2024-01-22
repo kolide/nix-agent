@@ -37,12 +37,7 @@ pkgs.nixosTest {
     # This just quiets some log spam we don't care about
     hardware.pulseaudio.enable = true;
 
-    services.kolide-launcher = {
-      enable = true;
-      kolideHostname = "k2device-preprod.kolide.com";
-      rootDirectory = "/var/kolide-k2/k2device-preprod.kolide.com";
-      updateChannel = "nightly";
-    };
+    services.kolide-launcher.enable = true;
     system.stateVersion = "23.11";
   };
 
@@ -93,22 +88,19 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
-        with subtest("launcher flare"):
+        with subtest("launcher doctor + flare"):
           _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           launcher_path = "/nix/store/" + launcher_find_stdout.strip() + "/bin/launcher"
 
-          doctor_status, doctor_stdout = machine.execute(launcher_path + " doctor")
-          print(doctor_status)
+          # Run launcher doctor and print results to help diagnose any launcher issues
+          _, doctor_stdout = machine.execute(launcher_path + " doctor")
           print(doctor_stdout)
 
-          flare_status, flare_stdout = machine.execute(launcher_path + " flare --save local")
-          print(flare_status)
-          print(flare_stdout)
+          machine.execute(launcher_path + " flare --save local")
 
           # copy_from_vm can't take a wildcard path, so find the exact path before copying
           _, flare_ls_out = machine.execute("ls ./kolide_agent_flare_report_*.zip")
           flare_path = "./" + flare_ls_out.strip()
-          print(flare_path) # TODO RM
           machine.copy_from_vm(flare_path, "./")
 
         with subtest("launcher troubleshooting"):
