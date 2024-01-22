@@ -89,14 +89,12 @@ pkgs.nixosTest {
           machine.screenshot("test-screen4.png")
 
         with subtest("launcher flare"):
-          launcher_find_status, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
-          print(launcher_find_status)
+          _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           print(launcher_find_stdout)
-          launcher_path = launcher_find_stdout + "/bin/launcher"
-          doctor_status, doctor_stdout = machine.execute(launcher_path + " doctor")
+          doctor_status, doctor_stdout = machine.execute(launcher_find_stdout.strip() + "/bin/launcher doctor")
           print(doctor_status)
           print(doctor_stdout)
-          flare_status, flare_stdout = machine.execute(launcher_path + " flare --save local")
+          flare_status, flare_stdout = machine.execute(launcher_find_stdout.strip() + "/bin/launcher flare --save local")
           print(flare_status)
           print(flare_stdout)
           pwd_status, pwd_out = machine.execute("pwd")
