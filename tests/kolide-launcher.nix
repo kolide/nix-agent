@@ -89,6 +89,8 @@ pkgs.nixosTest {
 
         # Ensure machine can reach mock k2 server
         machine.wait_for_unit("network-online.target")
+        machine.wait_until_succeeds("curl --fail http://k2server/version", timeout=120)
+        machine.succeed("curl --fail http://192.168.0.2/version")
         machine.succeed("curl --fail http://app.kolide.test/version")
 
         with subtest("log in to MATE"):
