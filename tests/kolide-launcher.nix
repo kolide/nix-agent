@@ -55,17 +55,12 @@ pkgs.nixosTest {
       networking.useDHCP = false;
       networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.2"; prefixLength = 24; } ];
 
-      services.nginx = {
-        enable = true;
-        virtualHosts."app.kolide.test" = {
-          locations = {
-            "/" = {
-              return = ''200 "{}"'';
-            };
-          };
-          addSSL = false;
-          default = true;
-        };
+      systemd.services.mock-k2-server = {
+        description = "Mock K2 server (device and control)";
+        serviceConfig.Type = "simple";
+        serviceConfig.ExecStart = "${pkgs.python3}/bin/python ${./k2server.py}";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
       };
     };
   };
@@ -83,7 +78,7 @@ pkgs.nixosTest {
       if "${ci}":
         # Wait for mock k2 server to be online
         k2server.start()
-        k2server.wait_for_unit("nginx.service")
+        k2server.wait_for_unit("mock-k2-server.service")
 
         # Start VM for test launcher installation
         machine.start()
