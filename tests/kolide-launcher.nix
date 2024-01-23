@@ -54,6 +54,7 @@ pkgs.nixosTest {
       networking.firewall.allowedTCPPorts = [ 80 ];
       networking.useDHCP = false;
       networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.2"; prefixLength = 24; } ];
+      networking.hosts."127.0.0.1" = [ "app.kolide.test" ];
 
       systemd.services.mock-k2-server = {
         description = "Mock K2 server (device and control)";
