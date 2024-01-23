@@ -47,14 +47,14 @@ pkgs.nixosTest {
 
       networking.useDHCP = false;
       networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.1"; prefixLength = 24; } ];
-      networking.hosts."192.168.0.2" = [ "app.kolide.test" ];
+      networking.extraHosts = "192.168.0.2 app.kolide.test";
     };
 
     k2server = { config, pkgs, ... }: {
       networking.firewall.allowedTCPPorts = [ 80 ];
       networking.useDHCP = false;
       networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.2"; prefixLength = 24; } ];
-      networking.hosts."127.0.0.1" = [ "app.kolide.test" ];
+      networking.extraHosts = "127.0.0.1 app.kolide.test";
 
       systemd.services.mock-k2-server = {
         description = "Mock K2 server (device and control)";
@@ -90,6 +90,7 @@ pkgs.nixosTest {
         # Ensure machine can reach mock k2 server
         machine.wait_for_unit("network-online.target")
         machine.wait_until_succeeds("curl --fail http://k2server/version", timeout=120)
+        machine.succeed("nc -v -z 192.168.0.2 80")
         machine.succeed("curl --fail http://192.168.0.2/version")
         machine.succeed("curl --fail http://app.kolide.test/version")
 
