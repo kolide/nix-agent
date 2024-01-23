@@ -59,6 +59,8 @@ pkgs.nixosTest {
         description = "Mock K2 server (device and control)";
         serviceConfig.Type = "simple";
         serviceConfig.ExecStart = "${pkgs.python3}/bin/python ${./k2server.py}";
+        serviceConfig.Restart = "on-failure";
+        serviceConfig.RestartSec = 1;
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
       };

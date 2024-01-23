@@ -78,6 +78,14 @@ class K2MockServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"desktop_enabled": "1"}).encode())
             return
 
+        # Version endpoint
+        elif req_path_parsed.path == "/version" + agent_flags_hash:
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(b'1')
+            return
+
         # Not a supported endpoint
         else:
             self.send_response(404)
