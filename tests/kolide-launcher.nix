@@ -11,36 +11,63 @@ in
 pkgs.nixosTest {
   name = "kolide-launcher";
 
-  nodes.machine = { config, pkgs, ... }: {
-    imports = [
-      flake.nixosModules.kolide-launcher
-    ];
+  nodes = {
+    machine = { config, pkgs, ... }: {
+      imports = [
+        flake.nixosModules.kolide-launcher
+      ];
 
-    users.users.alice = {
-      isNormalUser = true;
-      description = "Alice Test";
-      password = "alicetest";
-      uid = 1000;
+      users.users.alice = {
+        isNormalUser = true;
+        description = "Alice Test";
+        password = "alicetest";
+        uid = 1000;
+      };
+
+      services.xserver.enable = true;
+      services.xserver.displayManager = {
+        lightdm.enable = true;
+        autoLogin = {
+          enable = true;
+          user = "alice";
+        };
+      };
+      services.xserver.desktopManager.mate.enable = true;
+      services.xserver.desktopManager.mate.debug = true;
+
+      # This just quiets some log spam we don't care about
+      hardware.pulseaudio.enable = true;
+
+      services.kolide-launcher.enable = true;
+      services.kolide-launcher.kolideHostname = "app.kolide.test:80";
+      services.kolide-launcher.insecureTransport = true;
+      services.kolide-launcher.insecureTLS = true;
+
+      system.stateVersion = "23.11";
+
+      networking.useDHCP = false;
+      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.1"; prefixLength = 24; } ];
+      networking.hosts."192.168.0.2" = [ "app.kolide.test" ];
     };
 
-    services.xserver.enable = true;
-    services.xserver.displayManager = {
-      lightdm.enable = true;
-      autoLogin = {
+    k2server = { config, pkgs, ... }: {
+      networking.firewall.allowedTCPPorts = [ 80 ];
+      networking.useDHCP = false;
+      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.2"; prefixLength = 24; } ];
+
+      services.nginx = {
         enable = true;
-        user = "alice";
+        virtualHosts."app.kolide.test" = {
+          locations = {
+            "/" = {
+              return = ''200 "{}"'';
+            };
+          };
+          addSSL = false;
+          default = true;
+        };
       };
     };
-    services.xserver.desktopManager.mate.enable = true;
-    services.xserver.desktopManager.mate.debug = true;
-
-    # This just quiets some log spam we don't care about
-    hardware.pulseaudio.enable = true;
-
-    services.kolide-launcher.enable = true;
-    services.kolide-launcher.kolideHostname = "k2device-preprod.kolide.com";
-
-    system.stateVersion = "23.11";
   };
 
   enableOCR = true;
@@ -54,6 +81,11 @@ pkgs.nixosTest {
     in
     ''
       if "${ci}":
+        # Wait for mock k2 server to be online
+        k2server.start()
+        k2server.wait_for_unit("nginx.service")
+
+        # Start VM for test launcher installation
         machine.start()
 
         with subtest("log in to MATE"):
@@ -90,7 +122,7 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
-        with subtest("launcher doctor + flare"):
+        with subtest("launcher flare"):
           _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           machine.execute("/nix/store/" + launcher_find_stdout.strip() + "/bin/launcher flare --save local")
 
