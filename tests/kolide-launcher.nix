@@ -79,15 +79,17 @@ pkgs.nixosTest {
     in
     ''
       if "${ci}":
+        start_all()
+
         # Wait for mock k2 server to be online
-        k2server.start()
         k2server.wait_for_unit("network-online.target")
         k2server.wait_for_unit("mock-k2-server.service")
         k2server.wait_for_open_port(80)
         k2server.succeed("curl --fail http://app.kolide.test/version")
 
-        # Start VM for test launcher installation
-        machine.start()
+        # Ensure machine can reach mock k2 server
+        machine.wait_for_unit("network-online.target")
+        machine.succeed("curl --fail http://app.kolide.test/version")
 
         with subtest("log in to MATE"):
           machine.wait_for_unit("display-manager.service", timeout=120)
