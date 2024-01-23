@@ -45,15 +45,19 @@ pkgs.nixosTest {
 
       system.stateVersion = "23.11";
 
+      virtualisation.vlans = [ 1 ];
+      networking.dhcpcd.enable = false;
       networking.useDHCP = false;
-      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.1"; prefixLength = 24; } ];
-      networking.extraHosts = "192.168.0.2 app.kolide.test";
+      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.1.1"; prefixLength = 24; } ];
+      networking.extraHosts = "192.168.1.2 app.kolide.test";
     };
 
     k2server = { config, pkgs, ... }: {
+      virtualisation.vlans = [ 1 ];
       networking.firewall.allowedTCPPorts = [ 80 ];
+      networking.dhcpcd.enable = false;
       networking.useDHCP = false;
-      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.0.2"; prefixLength = 24; } ];
+      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.1.2"; prefixLength = 24; } ];
       networking.extraHosts = "127.0.0.1 app.kolide.test";
 
       systemd.services.mock-k2-server = {
@@ -89,7 +93,7 @@ pkgs.nixosTest {
 
         # Ensure machine can reach mock k2 server
         machine.wait_for_unit("network-online.target")
-        machine.succeed("nc -v -z 192.168.0.2 80")
+        machine.succeed("nc -v -z 192.168.1.2 80")
         machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
 
         with subtest("log in to MATE"):
