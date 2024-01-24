@@ -94,5 +94,5 @@ class K2MockServer(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    s = HTTPServer(('app.kolide.test', 80), K2MockServer)
+    s = HTTPServer(('0.0.0.0', 8080), K2MockServer)
     s.serve_forever()
