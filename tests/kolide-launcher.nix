@@ -54,19 +54,20 @@ pkgs.nixosTest {
       networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.1.2"; prefixLength = 24; } ];
       networking.extraHosts = "127.0.0.1 app.kolide.test";
 
-      services.nginx = {
+      services.uwsgi = {
         enable = true;
-        virtualHosts."app.kolide.test" = {};
-      };
+        plugins = [ "python3" ];
+        capabilities = [ "CAP_NET_BIND_SERVICE" ];
+        instance.type = "emperor";
 
-      systemd.services.mock-k2-server = {
-        description = "Mock K2 server (device and control)";
-        serviceConfig.Type = "simple";
-        serviceConfig.ExecStart = "${pkgs.python3}/bin/python ${./k2server.py}";
-        serviceConfig.Restart = "on-failure";
-        serviceConfig.RestartSec = 1;
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
+        instance.vassals.k2server = {
+          type = "normal";
+          module = "wsgi:application";
+          http = ":80";
+          cap = "net_bind_service";
+          pythonPackages = self: [ self.flask ];
+          chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
+        };
       };
     };
   };
@@ -86,14 +87,12 @@ pkgs.nixosTest {
 
         # Wait for mock k2 server to be online
         k2server.wait_for_unit("network-online.target")
-        k2server.wait_for_unit("mock-k2-server.service")
-        k2server.wait_for_unit("nginx.service")
+        k2server.wait_for_unit("uwsgi.service")
         k2server.wait_for_open_port(80)
-        k2server.succeed("curl --fail http://app.kolide.test:8080/version")
+        k2server.succeed("curl --fail http://app.kolide.test/version")
 
         # Ensure machine can reach mock k2 server
         machine.wait_for_unit("network-online.target")
-        machine.succeed("curl http://app.kolide.test/")
         machine.succeed("nc -v -z 192.168.1.2 80")
         machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
 
