@@ -56,6 +56,7 @@ pkgs.nixosTest {
         type = "normal";
         module = "wsgi:application";
         http = ":80";
+        http-timeout = 30;
         cap = "net_bind_service";
         pythonPackages = self: [ self.flask ];
         chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
@@ -76,11 +77,10 @@ pkgs.nixosTest {
       if "${ci}":
         machine.start()
 
-        # Ensure machine can reach local mock k2 server
-        machine.wait_for_unit("network-online.target")
-        machine.wait_for_unit("uwsgi.service")
-        machine.sleep(20)
-        machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
+        with subtest("mock K2 server starts up"):
+          machine.wait_for_unit("network-online.target")
+          machine.wait_for_unit("uwsgi.service")
+          machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
 
         with subtest("log in to MATE"):
           machine.wait_for_unit("display-manager.service", timeout=120)
