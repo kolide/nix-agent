@@ -12,37 +12,49 @@ def jsonrpc():
     req_body = request.get_json()
     if req_body["method"] == "RequestEnrollment":
         return jsonify({
-            "node_key": "abd",
-            "node_invalid": False
+            "result": {
+                "node_key": "abd",
+                "node_invalid": False
+            },
+            "error": None,
+            "id": 0
         })
     elif req_body["method"] == "RequestConfig":
         return jsonify({
-            "config": json.dumps({
-                "options": {
-                    "audit_allow_config": False,
-                    "audit_allow_fim_events": False,
-                    "audit_allow_process_events": False,
-                    "audit_allow_fork_process_events": False,
-                    "audit_allow_selinux_events": False,
-                    "audit_allow_sockets": False,
-                    "audit_allow_user_events": False,
-                    "disable_audit": False,
-                    "disable_events": False,
-                    "enable_file_events": False,
-                    "events_max": 10000,
-                    "enable_bpf_events": False,
-                    "events_expiry": 3601,
-                    "read_max": 52428800,
-                    "logger_event_type": False,
-                    "distributed_interval": 30,
-                    "schedule_epoch": "1705518221"
-                }
-            }),
-            "node_invalid": False
+            "result": {
+                "config": json.dumps({
+                    "options": {
+                        "audit_allow_config": False,
+                        "audit_allow_fim_events": False,
+                        "audit_allow_process_events": False,
+                        "audit_allow_fork_process_events": False,
+                        "audit_allow_selinux_events": False,
+                        "audit_allow_sockets": False,
+                        "audit_allow_user_events": False,
+                        "disable_audit": False,
+                        "disable_events": False,
+                        "enable_file_events": False,
+                        "events_max": 10000,
+                        "enable_bpf_events": False,
+                        "events_expiry": 3601,
+                        "read_max": 52428800,
+                        "logger_event_type": False,
+                        "distributed_interval": 30,
+                        "schedule_epoch": "1705518221"
+                    }
+                }),
+                "node_invalid": False
+            },
+            "error": None,
+            "id": 0
         })
     else:
         return jsonify({
-            "node_invalid": False
+            "result": {
+                "node_invalid": False
+            },
+            "error": None,
+            "id": 0
         })
 
 # Control server: get challenge
