@@ -45,15 +45,8 @@ pkgs.nixosTest {
 
       system.stateVersion = "23.11";
 
-      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.1.1"; prefixLength = 24; } ];
-      networking.extraHosts = "192.168.1.2 app.kolide.test";
-    };
-
-    k2server = { config, pkgs, ... }: {
-      networking.firewall.allowedTCPPorts = [ 80 ];
-      networking.interfaces.eth1.ipv4.addresses = [ { address = "192.168.1.2"; prefixLength = 24; } ];
+      # Set up mock k2 server locally
       networking.extraHosts = "127.0.0.1 app.kolide.test";
-
       services.uwsgi = {
         enable = true;
         plugins = [ "python3" ];
@@ -83,17 +76,12 @@ pkgs.nixosTest {
     in
     ''
       if "${ci}":
-        start_all()
+        machine.start()
 
-        # Wait for mock k2 server to be online
-        k2server.wait_for_unit("network-online.target")
-        k2server.wait_for_unit("uwsgi.service")
-        k2server.wait_for_open_port(80)
-        k2server.succeed("curl --fail http://app.kolide.test/version")
-
-        # Ensure machine can reach mock k2 server
+        # Ensure machine can reach local mock k2 server
         machine.wait_for_unit("network-online.target")
-        machine.succeed("nc -v -z 192.168.1.2 80")
+        machine.wait_for_unit("uwsgi.service")
+        machine.sleep(20)
         machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
 
         with subtest("log in to MATE"):
