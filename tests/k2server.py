@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 from flask import Flask, jsonify, request, Response
 
 application = Flask(__name__)
@@ -16,7 +17,27 @@ def jsonrpc():
         })
     elif req_body["method"] == "RequestConfig":
         return jsonify({
-            "config": "{}",
+            "config": json.dumps({
+                "options": {
+                    "audit_allow_config": False,
+                    "audit_allow_fim_events": False,
+                    "audit_allow_process_events": False,
+                    "audit_allow_fork_process_events": False,
+                    "audit_allow_selinux_events": False,
+                    "audit_allow_sockets": False,
+                    "audit_allow_user_events": False,
+                    "disable_audit": False,
+                    "disable_events": False,
+                    "enable_file_events": False,
+                    "events_max": 10000,
+                    "enable_bpf_events": False,
+                    "events_expiry": 3601,
+                    "read_max": 52428800,
+                    "logger_event_type": False,
+                    "distributed_interval": 30,
+                    "schedule_epoch": "1705518221"
+                }
+            }),
             "node_invalid": False
         })
     else:
@@ -41,7 +62,7 @@ def subsystems():
 
 # Control server: get subsystem
 @application.route("/api/agent/object/<hash>", methods=['GET'])
-def get_subsystem():
+def get_subsystem(hash):
     if hash != agent_flags_hash:
         return '', 404
     return jsonify({"desktop_enabled": "1"})

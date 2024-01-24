@@ -11,56 +11,54 @@ in
 pkgs.nixosTest {
   name = "kolide-launcher";
 
-  nodes = {
-    machine = { config, pkgs, ... }: {
-      imports = [
-        flake.nixosModules.kolide-launcher
-      ];
+  nodes.machine = { config, pkgs, ... }: {
+    imports = [
+      flake.nixosModules.kolide-launcher
+    ];
 
-      users.users.alice = {
-        isNormalUser = true;
-        description = "Alice Test";
-        password = "alicetest";
-        uid = 1000;
-      };
+    users.users.alice = {
+      isNormalUser = true;
+      description = "Alice Test";
+      password = "alicetest";
+      uid = 1000;
+    };
 
-      services.xserver.enable = true;
-      services.xserver.displayManager = {
-        lightdm.enable = true;
-        autoLogin = {
-          enable = true;
-          user = "alice";
-        };
-      };
-      services.xserver.desktopManager.mate.enable = true;
-      services.xserver.desktopManager.mate.debug = true;
-
-      # This just quiets some log spam we don't care about
-      hardware.pulseaudio.enable = true;
-
-      services.kolide-launcher.enable = true;
-      services.kolide-launcher.kolideHostname = "app.kolide.test:80";
-      services.kolide-launcher.insecureTransport = true;
-      services.kolide-launcher.insecureTLS = true;
-
-      system.stateVersion = "23.11";
-
-      # Set up mock k2 server locally
-      networking.extraHosts = "127.0.0.1 app.kolide.test";
-      services.uwsgi = {
+    services.xserver.enable = true;
+    services.xserver.displayManager = {
+      lightdm.enable = true;
+      autoLogin = {
         enable = true;
-        plugins = [ "python3" ];
-        capabilities = [ "CAP_NET_BIND_SERVICE" ];
-        instance.type = "emperor";
+        user = "alice";
+      };
+    };
+    services.xserver.desktopManager.mate.enable = true;
+    services.xserver.desktopManager.mate.debug = true;
 
-        instance.vassals.k2server = {
-          type = "normal";
-          module = "wsgi:application";
-          http = ":80";
-          cap = "net_bind_service";
-          pythonPackages = self: [ self.flask ];
-          chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
-        };
+    # This just quiets some log spam we don't care about
+    hardware.pulseaudio.enable = true;
+
+    services.kolide-launcher.enable = true;
+    services.kolide-launcher.kolideHostname = "app.kolide.test:80";
+    services.kolide-launcher.insecureTransport = true;
+    services.kolide-launcher.insecureTLS = true;
+
+    system.stateVersion = "23.11";
+
+    # Set up mock k2 server locally
+    networking.extraHosts = "127.0.0.1 app.kolide.test";
+    services.uwsgi = {
+      enable = true;
+      plugins = [ "python3" ];
+      capabilities = [ "CAP_NET_BIND_SERVICE" ];
+      instance.type = "emperor";
+
+      instance.vassals.k2server = {
+        type = "normal";
+        module = "wsgi:application";
+        http = ":80";
+        cap = "net_bind_service";
+        pythonPackages = self: [ self.flask ];
+        chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
       };
     };
   };
