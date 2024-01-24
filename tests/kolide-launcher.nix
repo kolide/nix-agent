@@ -116,6 +116,10 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
+        with subtest("desktop check again"):
+          machine.sleep(180)
+          machine.screenshot("test-screen5.png")
+
         with subtest("launcher flare"):
           _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           machine.execute("/nix/store/" + launcher_find_stdout.strip() + "/bin/launcher flare --save local")
@@ -125,9 +129,7 @@ pkgs.nixosTest {
           flare_path = "./" + flare_ls_out.strip()
           machine.copy_from_vm(flare_path, "./")
 
-        with subtest("desktop check again"):
-          machine.sleep(180)
-          machine.screenshot("test-screen5.png")
+          machine.screenshot("test-screen6.png")
 
         machine.shutdown()
     '';
