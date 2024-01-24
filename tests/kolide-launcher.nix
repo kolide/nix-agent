@@ -125,17 +125,9 @@ pkgs.nixosTest {
           flare_path = "./" + flare_ls_out.strip()
           machine.copy_from_vm(flare_path, "./")
 
-        with subtest("launcher troubleshooting"):
-          root_status, root_stdout = machine.execute("ls -al /var/kolide-k2/k2device.kolide.com/")
-          print(root_status)
-          print(root_stdout)
-
-          machine.systemctl("restart kolide-launcher.service")
-          machine.sleep(15)
-          status, stdout = machine.execute("journalctl --unit=kolide-launcher.service -n 100 --no-pager")
-          print(status)
-          print(stdout)
-          print(machine.get_screen_text())
+        with subtest("desktop check again"):
+          machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
+          machine.screenshot("test-screen5.png")
 
         machine.shutdown()
     '';
