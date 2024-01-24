@@ -90,10 +90,7 @@ pkgs.nixosTest {
           machine.wait_for_window("marco")
           machine.wait_until_succeeds("pgrep mate-panel")
           machine.wait_for_window("Top Panel")
-          #machine.wait_for_window("Bottom Panel")
-          #machine.wait_until_succeeds("pgrep caja")
-          #machine.wait_for_window("Caja")
-          machine.sleep(50)
+          machine.sleep(20)
           machine.screenshot("test-screen1.png")
 
         with subtest("set up secret file"):
@@ -104,7 +101,7 @@ pkgs.nixosTest {
           machine.systemctl("start kolide-launcher.service")
           machine.wait_for_unit("kolide-launcher.service", timeout=60)
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
-          machine.sleep(60)
+          machine.sleep(30)
           machine.screenshot("test-screen2.png")
 
         with subtest("osquery runs"):
@@ -116,8 +113,7 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
 
-        with subtest("desktop check again"):
-          machine.sleep(60)
+          machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
           machine.screenshot("test-screen5.png")
 
         with subtest("launcher flare"):
@@ -128,8 +124,6 @@ pkgs.nixosTest {
           _, flare_ls_out = machine.execute("ls ./kolide_agent_flare_report_*.zip")
           flare_path = "./" + flare_ls_out.strip()
           machine.copy_from_vm(flare_path, "./")
-
-          machine.screenshot("test-screen6.png")
 
         machine.shutdown()
     '';
