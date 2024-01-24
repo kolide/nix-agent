@@ -102,7 +102,7 @@ pkgs.nixosTest {
         with subtest("launcher service runs and is set up correctly"):
           machine.systemctl("stop kolide-launcher.service")
           machine.systemctl("start kolide-launcher.service")
-          machine.wait_for_unit("kolide-launcher.service", timeout=120)
+          machine.wait_for_unit("kolide-launcher.service", timeout=60)
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
           machine.sleep(60)
           machine.screenshot("test-screen2.png")

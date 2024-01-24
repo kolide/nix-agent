@@ -77,7 +77,7 @@ def subsystems():
 def get_subsystem(hash):
     if hash != agent_flags_hash:
         return '', 404
-    return jsonify({"desktop_enabled": "1"})
+    return jsonify({"desktop_enabled_v1": "enabled"})
 
 # Version endpoint
 @application.route("/version", methods=['GET'])
