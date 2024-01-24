@@ -56,7 +56,7 @@ pkgs.nixosTest {
 
       services.nginx = {
         enable = true;
-        virtualHosts."k2server" = {};
+        virtualHosts."app.kolide.test" = {};
       };
 
       systemd.services.mock-k2-server = {
@@ -92,7 +92,7 @@ pkgs.nixosTest {
 
         # Ensure machine can reach mock k2 server
         machine.wait_for_unit("network-online.target")
-        machine.succeed("curl http://k2server/")
+        machine.succeed("curl http://app.kolide.test/")
         machine.succeed("nc -v -z 192.168.1.2 80")
         machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
 
