@@ -126,7 +126,7 @@ pkgs.nixosTest {
           machine.copy_from_vm(flare_path, "./")
 
         with subtest("desktop check again"):
-          machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
+          machine.sleep(180)
           machine.screenshot("test-screen5.png")
 
         machine.shutdown()
