@@ -117,7 +117,7 @@ pkgs.nixosTest {
           machine.screenshot("test-screen4.png")
 
         with subtest("desktop check again"):
-          machine.sleep(180)
+          machine.sleep(60)
           machine.screenshot("test-screen5.png")
 
         with subtest("launcher flare"):
