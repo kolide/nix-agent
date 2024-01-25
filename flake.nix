@@ -11,7 +11,7 @@
         version = "1.4.5";
 
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-\${version}.tar.gz";
+          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
           sha256 = "sha256-Dg9CvMX56lenrv0fwzbebqj1ktSdKeiPp593bOV6ERg=";
           name = "launcher";
         };
