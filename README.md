@@ -81,3 +81,8 @@ Then start the `kolide-launcher.service` service.
 [NixOS tests](https://nixos.org/manual/nixos/stable/index.html#sec-nixos-tests)
 live in the [./tests](./tests) directory and are included via flake checks.
 They are currently intended to run in CI only.
+
+#### Running the mock K2 server
+
+To run the mock K2 server locally for testing purposes, you can run
+`python3 -m flask --app k2server run` from the `tests` directory.

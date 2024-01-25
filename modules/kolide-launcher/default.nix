@@ -1,7 +1,7 @@
 flake: { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) types mkEnableOption mkOption mkIf;
+  inherit (lib) types mkEnableOption mkOption mkIf optional strings;
   inherit (flake.packages.x86_64-linux) kolide-launcher;
   cfg = config.services.kolide-launcher;
 in
@@ -62,6 +62,22 @@ in
         Initial autoupdater subprocess delay.
       '';
     };
+
+    insecureTransport = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Do not use TLS for transport layer.
+      '';
+    };
+
+    insecureTLS = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Do not verify TLS certs for outgoing connections.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -79,18 +95,21 @@ in
         # module. So, until we have a better option, we give the kolide-launcher unit access to the symlinks
         # in `/run/current-system/sw/bin` and other likely locations that will allow it to find software inside the Nix store.
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
-        ExecStart = ''
-          ${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher \
-            --hostname ${cfg.kolideHostname} \
-            --root_directory ${cfg.rootDirectory} \
-            --osqueryd_path ${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd \
-            --enroll_secret_path ${cfg.enrollSecretDirectory}/secret \
-            --update_channel ${cfg.updateChannel} \
-            --transport jsonrpc \
-            --autoupdate \
-            --autoupdate_interval ${cfg.autoupdateInterval} \
-            --autoupdater_initial_delay ${cfg.autoupdaterInitialDelay}
-        '';
+        ExecStart = strings.concatStringsSep " " ([
+            "${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher"
+            "--hostname ${cfg.kolideHostname}"
+            "--root_directory ${cfg.rootDirectory}"
+            "--osqueryd_path ${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd"
+            "--enroll_secret_path ${cfg.enrollSecretDirectory}/secret"
+            "--update_channel ${cfg.updateChannel}"
+            "--transport jsonrpc"
+            "--autoupdate"
+            "--autoupdate_interval ${cfg.autoupdateInterval}"
+            "--autoupdater_initial_delay ${cfg.autoupdaterInitialDelay}"
+          ]
+            ++ optional cfg.insecureTransport "--insecure_transport"
+            ++ optional cfg.insecureTLS "--insecure"
+          );
         Restart = "on-failure";
         RestartSec = 3;
       };
