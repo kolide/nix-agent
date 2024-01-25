@@ -37,14 +37,21 @@ pkgs.nixosTest {
     # This just quiets some log spam we don't care about
     hardware.pulseaudio.enable = true;
 
+    system.stateVersion = "23.11";
+
+    # Launcher setup
     services.kolide-launcher.enable = true;
     services.kolide-launcher.kolideHostname = "app.kolide.test:80";
     services.kolide-launcher.insecureTransport = true;
     services.kolide-launcher.insecureTLS = true;
 
-    system.stateVersion = "23.11";
+    # Add a (test) secret
+    environment.etc."kolide-k2/secret" = {
+      mode = "0600";
+      text = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAwIiwibmFtZSI6ImFsaWNlIiwiaWF0IjoxNzA2MTkzNzYxLCJvcmdhbml6YXRpb24iOiJ0ZXN0LXRlbmFudCJ9.KaZlRr0_XYhopgFvfRqxlEl71cCbqW16pG9sdyFNZrs";
+    };
 
-    # Set up mock k2 server locally
+    # Set up mock agent server locally
     networking.extraHosts = "127.0.0.1 app.kolide.test";
     services.uwsgi = {
       enable = true;
@@ -52,14 +59,14 @@ pkgs.nixosTest {
       capabilities = [ "CAP_NET_BIND_SERVICE" ];
       instance.type = "emperor";
 
-      instance.vassals.k2server = {
+      instance.vassals.agentserver = {
         type = "normal";
         module = "wsgi:application";
         http = ":80";
         http-timeout = 30;
         cap = "net_bind_service";
         pythonPackages = self: [ self.flask ];
-        chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
+        chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./agentserver.py);
       };
     };
   };
@@ -77,7 +84,7 @@ pkgs.nixosTest {
       if "${ci}":
         machine.start()
 
-        with subtest("mock K2 server starts up"):
+        with subtest("mock agent server starts up"):
           machine.wait_for_unit("network-online.target")
           machine.wait_for_unit("uwsgi.service")
           machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
@@ -96,12 +103,11 @@ pkgs.nixosTest {
           machine.sleep(20)
           machine.screenshot("test-screen1.png")
 
-        with subtest("set up secret file"):
-          machine.copy_from_host("${./test-secret}", "/etc/kolide-k2/secret")
-
         with subtest("launcher service runs and is set up correctly"):
-          machine.systemctl("stop kolide-launcher.service")
-          machine.systemctl("start kolide-launcher.service")
+          # Wait a little bit to be sure and then perform a restart now that we're logged in,
+          # so that launcher can register with systray correctly
+          machine.sleep(20)
+          machine.systemctl("restart kolide-launcher.service")
           machine.wait_for_unit("kolide-launcher.service", timeout=60)
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
           machine.sleep(30)
@@ -111,11 +117,11 @@ pkgs.nixosTest {
           machine.wait_until_succeeds("pgrep osqueryd", timeout=30)
           machine.screenshot("test-screen3.png")
 
-        with subtest("launcher desktop runs (test incomplete for now)"):
+        with subtest("launcher desktop runs"):
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/kolide.png")
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
-
+          # Confirm that a launcher desktop process is spawned for the user
           machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
           machine.screenshot("test-screen5.png")
 

@@ -68,7 +68,9 @@ Update your `/etc/nixos/flake.nix` file to include `kolide-launcher` in its inpu
 
 Then rebuild: `sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#my-hostname --impure`.
 
-For now, you'll want to manually create your secret file:
+### Setting up your enrollment secret
+
+You can manually create your secret file:
 
 ```
 echo -n 'your-enroll-secret-goes-here' | sudo tee /etc/kolide-k2/secret
@@ -76,13 +78,22 @@ echo -n 'your-enroll-secret-goes-here' | sudo tee /etc/kolide-k2/secret
 
 Then start the `kolide-launcher.service` service.
 
+You can also configure the secret in `/etc/nixos/configuration.nix`.
+
+```
+environment.etc."kolide-k2/secret" = {
+  mode = "0600";
+  text = "<enrollment secret goes here>";
+};
+```
+
 ### Running tests
 
 [NixOS tests](https://nixos.org/manual/nixos/stable/index.html#sec-nixos-tests)
 live in the [./tests](./tests) directory and are included via flake checks.
 They are currently intended to run in CI only.
 
-#### Running the mock K2 server
+#### Running the mock agent server
 
-To run the mock K2 server locally for testing purposes, you can run
-`python3 -m flask --app k2server run` from the `tests` directory.
+To run the mock agent server locally for testing purposes, you can run
+`python3 -m flask --app agentserver run` from the `tests` directory.
