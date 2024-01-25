@@ -37,12 +37,19 @@ pkgs.nixosTest {
     # This just quiets some log spam we don't care about
     hardware.pulseaudio.enable = true;
 
+    system.stateVersion = "23.11";
+
+    # Launcher setup
     services.kolide-launcher.enable = true;
     services.kolide-launcher.kolideHostname = "app.kolide.test:80";
     services.kolide-launcher.insecureTransport = true;
     services.kolide-launcher.insecureTLS = true;
 
-    system.stateVersion = "23.11";
+    # Add a (test) secret
+    environment.etc."kolide-k2/secret" = {
+      mode = "0600";
+      text = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAwIiwibmFtZSI6ImFsaWNlIiwiaWF0IjoxNzA2MTkzNzYxLCJvcmdhbml6YXRpb24iOiJ0ZXN0LXRlbmFudCJ9.KaZlRr0_XYhopgFvfRqxlEl71cCbqW16pG9sdyFNZrs";
+    };
 
     # Set up mock agent server locally
     networking.extraHosts = "127.0.0.1 app.kolide.test";
@@ -96,12 +103,9 @@ pkgs.nixosTest {
           machine.sleep(20)
           machine.screenshot("test-screen1.png")
 
-        with subtest("set up secret file"):
-          machine.copy_from_host("${./test-secret}", "/etc/kolide-k2/secret")
-
         with subtest("launcher service runs and is set up correctly"):
-          machine.systemctl("stop kolide-launcher.service")
-          machine.systemctl("start kolide-launcher.service")
+          # Do a restart now that we're logged in, so that launcher can register with systray correctly
+          machine.systemctl("restart kolide-launcher.service")
           machine.wait_for_unit("kolide-launcher.service", timeout=60)
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
           machine.sleep(30)
@@ -111,11 +115,10 @@ pkgs.nixosTest {
           machine.wait_until_succeeds("pgrep osqueryd", timeout=30)
           machine.screenshot("test-screen3.png")
 
-        with subtest("launcher desktop runs (test incomplete for now)"):
+        with subtest("launcher desktop runs"):
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/kolide.png")
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
-
           machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
           machine.screenshot("test-screen5.png")
 

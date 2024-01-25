@@ -24,11 +24,6 @@ jobs:
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
 
-    - name: set up test secret
-      run: |
-        mv ./tests/test-secret ./tests/test-secret.bak
-        echo -n "${{ secrets.NABALU_ENROLL_SECRET }}" | tee ./tests/test-secret
-
     - name: check flake (runs tests)
       run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
       timeout-minutes: 15
@@ -69,7 +64,3 @@ jobs:
 
     - name: osqueryd version
       run: ./result/bin/osqueryd --version
-
-    - name: clean up after tests
-      if: always()
-      run: mv ./tests/test-secret.bak ./tests/test-secret
