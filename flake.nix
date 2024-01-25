@@ -8,17 +8,17 @@
       with import nixpkgs { system = "x86_64-linux"; };
       stdenv.mkDerivation rec {
         pname = "kolide-launcher";
-        version = "1.4.4-6-g33c6fd9";
+        version = "1.4.5";
 
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-          sha256 = "sha256-loz4xpBB5v2M1TSETmL2qr66qiq2tavn5CW+jR4vyd8=";
+          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-\${version}.tar.gz";
+          sha256 = "sha256-Dg9CvMX56lenrv0fwzbebqj1ktSdKeiPp593bOV6ERg=";
           name = "launcher";
         };
 
         osqSrc = fetchzip {
-          url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.10.2.tar.gz";
-          sha256 = "sha256-z8GNNsAeFptCzPbHs/CFaLrCtuYCXwT5QTJaEAH6ncA=";
+          url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.11.0.tar.gz";
+          sha256 = "sha256-gUWow5ZmK7AVBJXkOYQdm1C0gGpr2XExAJgKvSJMnGM=";
           name = "osqueryd";
         };
 
