@@ -68,13 +68,24 @@ Update your `/etc/nixos/flake.nix` file to include `kolide-launcher` in its inpu
 
 Then rebuild: `sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos#my-hostname --impure`.
 
-For now, you'll want to manually create your secret file:
+### Setting up your enrollment secret
+
+You can manually create your secret file:
 
 ```
 echo -n 'your-enroll-secret-goes-here' | sudo tee /etc/kolide-k2/secret
 ```
 
 Then start the `kolide-launcher.service` service.
+
+You can also configure the secret in `/etc/nixos/configuration.nix`.
+
+```
+environment.etc."kolide-k2/secret" = {
+  mode = "0600";
+  text = "<enrollment secret goes here>";
+};
+```
 
 ### Running tests
 
