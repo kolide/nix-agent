@@ -104,7 +104,9 @@ pkgs.nixosTest {
           machine.screenshot("test-screen1.png")
 
         with subtest("launcher service runs and is set up correctly"):
-          # Do a restart now that we're logged in, so that launcher can register with systray correctly
+          # Wait a little bit to be sure and then perform a restart now that we're logged in,
+          # so that launcher can register with systray correctly
+          machine.sleep(20)
           machine.systemctl("restart kolide-launcher.service")
           machine.wait_for_unit("kolide-launcher.service", timeout=60)
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
@@ -119,6 +121,7 @@ pkgs.nixosTest {
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/kolide.png")
           machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
           machine.screenshot("test-screen4.png")
+          # Confirm that a launcher desktop process is spawned for the user
           machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
           machine.screenshot("test-screen5.png")
 
