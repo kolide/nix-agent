@@ -44,7 +44,7 @@ pkgs.nixosTest {
 
     system.stateVersion = "23.11";
 
-    # Set up mock k2 server locally
+    # Set up mock agent server locally
     networking.extraHosts = "127.0.0.1 app.kolide.test";
     services.uwsgi = {
       enable = true;
@@ -52,14 +52,14 @@ pkgs.nixosTest {
       capabilities = [ "CAP_NET_BIND_SERVICE" ];
       instance.type = "emperor";
 
-      instance.vassals.k2server = {
+      instance.vassals.agentserver = {
         type = "normal";
         module = "wsgi:application";
         http = ":80";
         http-timeout = 30;
         cap = "net_bind_service";
         pythonPackages = self: [ self.flask ];
-        chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./k2server.py);
+        chdir = pkgs.writeTextDir "wsgi.py" (builtins.readFile ./agentserver.py);
       };
     };
   };
@@ -77,7 +77,7 @@ pkgs.nixosTest {
       if "${ci}":
         machine.start()
 
-        with subtest("mock K2 server starts up"):
+        with subtest("mock agent server starts up"):
           machine.wait_for_unit("network-online.target")
           machine.wait_for_unit("uwsgi.service")
           machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)

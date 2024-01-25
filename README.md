@@ -82,7 +82,7 @@ Then start the `kolide-launcher.service` service.
 live in the [./tests](./tests) directory and are included via flake checks.
 They are currently intended to run in CI only.
 
-#### Running the mock K2 server
+#### Running the mock agent server
 
-To run the mock K2 server locally for testing purposes, you can run
-`python3 -m flask --app k2server run` from the `tests` directory.
+To run the mock agent server locally for testing purposes, you can run
+`python3 -m flask --app agentserver run` from the `tests` directory.
