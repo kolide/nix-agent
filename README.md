@@ -2,6 +2,33 @@
 
 Packages [kolide/launcher](https://github.com/kolide/launcher) for Nix.
 
+## Running kolide-launcher
+
+Include `kolide-launcher` in your `/etc/nixos/flake.nix` inputs:
+
+```
+kolide-launcher = {
+  url = "github:/kolide/nix-agent/main";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+Deploy your enrollment secret to `/etc/kolide-k2/secret`. This can be done e.g.
+by adding it to `/etc/nixos/configuration.nix`:
+
+```
+environment.etc."kolide-k2/secret" = {
+  mode = "0600";
+  text = "<enrollment secret goes here>";
+};
+```
+
+In `/etc/nixos/configuration.nix`, ensure that the kolide-launcher service is enabled:
+
+```
+services.kolide-launcher.enable = true;
+```
+
 ## Developing and testing in a VM
 
 Create a VM using a NixOS 23.11 image with flakes enabled and SSH to the new VM.
