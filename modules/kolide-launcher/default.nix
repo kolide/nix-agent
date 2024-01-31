@@ -94,7 +94,8 @@ in
         # autoupdated versions of launcher may need to access new executables not listed in this originally-installed
         # module. So, until we have a better option, we give the kolide-launcher unit access to the symlinks
         # in `/run/current-system/sw/bin` and other likely locations that will allow it to find software inside the Nix store.
-        Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+        # The agent also must have explicit access to patchelf, to be able to patch its autoupdates after download.
+        Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:${pkgs.patchelf}/bin";
         ExecStart = strings.concatStringsSep " " ([
             "${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher"
             "--hostname ${cfg.kolideHostname}"
