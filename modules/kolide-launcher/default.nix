@@ -78,6 +78,14 @@ in
         Do not verify TLS certs for outgoing connections.
       '';
     };
+
+    localdevPath = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = ''
+        Path to local launcher build -- for development purposes.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -110,6 +118,7 @@ in
           ]
             ++ optional cfg.insecureTransport "--insecure_transport"
             ++ optional cfg.insecureTLS "--insecure"
+            ++ optional (!builtins.isNull cfg.localdevPath) "--localdev_path ${cfg.localdevPath}"
           );
         Restart = "on-failure";
         RestartSec = 3;
