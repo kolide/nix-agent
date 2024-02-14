@@ -8,11 +8,11 @@
       with import nixpkgs { system = "x86_64-linux"; };
       stdenv.mkDerivation rec {
         pname = "kolide-launcher";
-        version = "1.4.5";
+        version = "1.5.3";
 
         src = fetchzip {
           url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-          sha256 = "sha256-Dg9CvMX56lenrv0fwzbebqj1ktSdKeiPp593bOV6ERg=";
+          sha256 = "";
           name = "launcher";
         };
 
