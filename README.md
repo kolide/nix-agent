@@ -23,6 +23,13 @@ environment.etc."kolide-k2/secret" = {
 };
 ```
 
+The enrollment secret can be discovered by viewing `/etc/kolide-k2/secret` (on macOS/Linux)
+or `C:\Program Files\Kolide\Launcher-kolide-k2\conf\secret` (on Windows) on an existing
+installation. If an existing installation is not available, then the secret may be extracted
+from one of the packages available for your tenant -- e.g. you can download `kolide-launcher.deb`,
+run `nix-shell -p dpkg` to make the `dpkg-deb` tool available, and then use `dpkg-deb` to extract
+the contents of the deb and view the resulting `<archive directory>/etc/kolide-k2/secret` file.
+
 In `/etc/nixos/configuration.nix`, ensure that the kolide-launcher service is enabled:
 
 ```
