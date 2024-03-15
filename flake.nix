@@ -5,25 +5,33 @@
 
   outputs = { self, nixpkgs }: {
     packages.x86_64-linux.kolide-launcher =
-      with import nixpkgs { system = "x86_64-linux"; };
-      stdenv.mkDerivation rec {
+      let
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [ self.overlays.x86_64-linux.default ];
+        };
+      in
+      pkgs.kolide-launcher;
+
+    overlays.x86_64-linux.default = final: prev: {
+      kolide-launcher = final.stdenv.mkDerivation rec {
         pname = "kolide-launcher";
         version = "1.5.3";
 
-        src = fetchzip {
+        src = final.fetchzip {
           url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
           sha256 = "sha256-kLvTMcTKPkvsf/VDNFOQAhGz7nU+kec2koiRofBhB/k=";
           name = "launcher";
         };
 
-        osqSrc = fetchzip {
+        osqSrc = final.fetchzip {
           url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.11.0.tar.gz";
           sha256 = "sha256-gUWow5ZmK7AVBJXkOYQdm1C0gGpr2XExAJgKvSJMnGM=";
           name = "osqueryd";
         };
 
         nativeBuildInputs = [
-          autoPatchelfHook
+          final.autoPatchelfHook
         ];
 
         buildInputs = [];
@@ -34,7 +42,7 @@
           cp $osqSrc/osqueryd $out/bin
         '';
 
-        meta = with lib; {
+        meta = with final.lib; {
           homepage = "https://www.kolide.com";
           description = "Kolide Endpoint Agent";
           platforms = [ "x86_64-linux" ];
@@ -47,6 +55,7 @@
           sourceProvenance = with sourceTypes; [ binaryNativeCode ];
         };
       };
+    };
 
     packages.x86_64-linux.default = self.packages.x86_64-linux.kolide-launcher;
 
