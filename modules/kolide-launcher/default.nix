@@ -1,9 +1,9 @@
 flake: { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) types mkEnableOption mkOption mkIf optional strings;
-  inherit (flake.packages.x86_64-linux) kolide-launcher;
+  inherit (lib) types mkDefault mkEnableOption mkOption mkIf optional strings;
   cfg = config.services.kolide-launcher;
+  pkg = cfg.package;
 in
 {
   imports = [];
@@ -12,6 +12,14 @@ in
     enable = mkEnableOption ''
       Kolide launcher agent.
     '';
+
+    package = mkOption {
+      type = types.package;
+      default = flake.packages.x86_64-linux.kolide-launcher;
+      description = lib.mdDoc ''
+        The Kolide launcher agent package to use.
+      '';
+    };
 
     kolideHostname = mkOption {
       type = types.str;
@@ -105,10 +113,10 @@ in
         # The agent also must have explicit access to patchelf, to be able to patch its autoupdates after download.
         Environment = "PATH=/run/wrappers/bin:/bin:/sbin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:${pkgs.patchelf}/bin";
         ExecStart = strings.concatStringsSep " " ([
-            "${flake.packages.x86_64-linux.kolide-launcher}/bin/launcher"
+            "${pkg}/bin/launcher"
             "--hostname ${cfg.kolideHostname}"
             "--root_directory ${cfg.rootDirectory}"
-            "--osqueryd_path ${flake.packages.x86_64-linux.kolide-launcher}/bin/osqueryd"
+            "--osqueryd_path ${pkg}/bin/osqueryd"
             "--enroll_secret_path ${cfg.enrollSecretDirectory}/secret"
             "--update_channel ${cfg.updateChannel}"
             "--transport jsonrpc"
