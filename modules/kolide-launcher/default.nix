@@ -1,4 +1,4 @@
-flake: { config, lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib) types mkDefault mkEnableOption mkOption mkIf optional strings;
@@ -15,7 +15,7 @@ in
 
     package = mkOption {
       type = types.package;
-      default = flake.packages.x86_64-linux.kolide-launcher;
+      default = pkgs.callPackage ../../kolide-launcher.nix { };
       description = lib.mdDoc ''
         The Kolide launcher agent package to use.
       '';
