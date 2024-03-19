@@ -21,6 +21,6 @@
 
     nixosModules.kolide-launcher = import ./modules/kolide-launcher;
 
-    checks.x86_64-linux.kolide-launcher = import ./tests/kolide-launcher.nix;
+    checks.x86_64-linux.kolide-launcher = import ./tests/kolide-launcher.nix { flake = self; };
   };
 }
