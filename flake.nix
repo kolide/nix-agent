@@ -13,7 +13,7 @@
       in
       pkgs.kolide-launcher;
 
-    overlays.x86_64-linux.default = final: prev: {
+    overlays.default = final: prev: {
       kolide-launcher = final.callPackage ./kolide-launcher.nix { };
     };
 
