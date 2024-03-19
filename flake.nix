@@ -8,7 +8,7 @@
       let
         pkgs = import nixpkgs {
           system = "x86_64-linux";
-          overlays = [ self.overlays.x86_64-linux.default ];
+          overlays = [ self.overlays.default ];
         };
       in
       pkgs.kolide-launcher;
