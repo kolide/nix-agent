@@ -30,6 +30,8 @@ from one of the packages available for your tenant -- e.g. you can download `kol
 run `nix-shell -p dpkg` to make the `dpkg-deb` tool available, and then use `dpkg-deb` to extract
 the contents of the deb and view the resulting `<archive directory>/etc/kolide-k2/secret` file.
 
+This enrollment secret should be kept confidential.
+
 In `/etc/nixos/configuration.nix`, ensure that the kolide-launcher service is enabled:
 
 ```
