@@ -6,17 +6,17 @@
 
 stdenv.mkDerivation rec {
   pname = "kolide-launcher";
-  version = "1.9.6";
+  version = "1.10.2";
 
   src = fetchzip {
     url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-    sha256 = "sha256-AE0TYeoKBCOz8Sq95fk2AdvqW6kRknyLwUp587p3gVo=";
+    sha256 = "sha256-tStywZWCTQi+0Y+9QM3NNY4DXnNQ+Nbbz3JFCqf2osU=";
     name = "launcher";
   };
 
   osqSrc = fetchzip {
-    url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.12.2.tar.gz";
-    sha256 = "sha256-5o7zynfo5ynan900pKh9hTRlkh2wVgr7a68HFjc5zYw=";
+    url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.13.1.tar.gz";
+    sha256 = "sha256-iI4J+qNWPUgjBYWQIc7F7/+8d5nibfBvp1+1ymn30QE=";
     name = "osqueryd";
   };
 
