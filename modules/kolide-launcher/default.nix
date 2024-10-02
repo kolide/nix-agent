@@ -87,6 +87,14 @@ in
       '';
     };
 
+    osQueryFlags = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = ''
+        OsQuery flagsto pass via the agent.
+      '';
+    };
+
     localdevPath = mkOption {
       type = types.nullOr types.path;
       default = null;
@@ -124,10 +132,11 @@ in
             "--autoupdate_interval ${cfg.autoupdateInterval}"
             "--autoupdater_initial_delay ${cfg.autoupdaterInitialDelay}"
           ]
-            ++ optional cfg.insecureTransport "--insecure_transport"
-            ++ optional cfg.insecureTLS "--insecure"
-            ++ optional (!builtins.isNull cfg.localdevPath) "--localdev_path ${cfg.localdevPath}"
-          );
+          ++ optional cfg.insecureTransport "--insecure_transport"
+          ++ optional cfg.insecureTLS "--insecure"
+          ++ optional (!builtins.isNull cfg.localdevPath) "--localdev_path ${cfg.localdevPath}"
+          ++ map (x: "--osquery_flag ${x}") cfg.osQueryFlags
+        );
         Restart = "on-failure";
         RestartSec = 3;
       };
