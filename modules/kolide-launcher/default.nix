@@ -91,7 +91,7 @@ in
       type = types.listOf types.str;
       default = [];
       description = ''
-        OsQuery flagsto pass via the agent.
+        OsQuery flags to pass via the agent.
       '';
     };
 
