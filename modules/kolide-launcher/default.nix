@@ -87,11 +87,11 @@ in
       '';
     };
 
-    osQueryFlags = mkOption {
+    osqueryFlags = mkOption {
       type = types.listOf types.str;
       default = [];
       description = ''
-        OsQuery flags to pass via the agent.
+        Flags to pass to osquery (possibly overriding Launcher defaults).
       '';
     };
 
@@ -135,7 +135,7 @@ in
           ++ optional cfg.insecureTransport "--insecure_transport"
           ++ optional cfg.insecureTLS "--insecure"
           ++ optional (!builtins.isNull cfg.localdevPath) "--localdev_path ${cfg.localdevPath}"
-          ++ map (x: "--osquery_flag ${x}") cfg.osQueryFlags
+          ++ map (x: "--osquery_flag ${x}") cfg.osqueryFlags
         );
         Restart = "on-failure";
         RestartSec = 3;
