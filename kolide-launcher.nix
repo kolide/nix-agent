@@ -6,11 +6,11 @@
 
 stdenv.mkDerivation rec {
   pname = "kolide-launcher";
-  version = "1.12.1";
+  version = "1.12.3";
 
   src = fetchzip {
     url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-    sha256 = "sha256-mFGdybZLqhnt1UqMTWRJMbnp6OqhP0x3axIifOrs368=";
+    sha256 = "sha256-shJMPtz3txgRRw0sc9bNgYUy9cw9TkVGYI/nAO6TbDg=";
     name = "launcher";
   };
 
