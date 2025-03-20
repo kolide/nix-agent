@@ -5,6 +5,7 @@
 }:
 
 let
+  inherit (stdenv.hostPlatform) system;
   sources =
     {
       x86_64-linux = {
