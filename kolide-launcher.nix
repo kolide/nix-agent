@@ -52,7 +52,7 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     homepage = "https://www.kolide.com";
     description = "Kolide Endpoint Agent";
-    platforms = [ "x86_64-linux", "aarch64-linux" ];
+    platforms = [ "x86_64-linux" "aarch64-linux" ];
     license = {
       fullName = "The Kolide Enterprise Edition (EE) license";
       url = "https://github.com/kolide/launcher/blob/main/LICENSE";
