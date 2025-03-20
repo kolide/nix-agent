@@ -29,7 +29,7 @@ let
         };
         osqSrc = fetchzip {
           url = "https://dl.kolide.co/kolide/osqueryd/linux/arm64/osqueryd-5.14.1.tar.gz";
-          sha256 = "sha256-rcmoXshD9pwaTN2dgJm9ZmuCuNQkPgLxghtMGYfhfYE=";
+          sha256 = "sha256-EJY4T7a5Af4jP3IIg/aeezzf9/TPwVw6FtLtG2Z/Idk=";
           name = "osqueryd";
         };
       };
