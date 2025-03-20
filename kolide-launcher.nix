@@ -32,6 +32,7 @@ stdenv.mkDerivation rec {
   };
 
   osqSrc = fetchzip {
+    inherit dist;
     url = "https://dl.kolide.co/kolide/osqueryd/linux/${dist.arch}/osqueryd-5.14.1.tar.gz";
     sha256 = "${dist.osquerysha256}";
     name = "osqueryd";
