@@ -18,7 +18,7 @@ let
         launchersha256 = "";
         osquerysha256 = "";
       };
-    }
+    };
 in
 
 stdenv.mkDerivation rec {
