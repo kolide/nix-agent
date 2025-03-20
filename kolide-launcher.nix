@@ -23,7 +23,7 @@ let
 
       aarch64-linux = {
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/arm64/launcher-1.12.3.tar.gz";
+          url = "https://dl.kolide.co/kolide/launcher/linux/arm64/launcher-1.17.0-8-g5039a8f7.tar.gz";
           sha256 = "sha256-shJMPtz3txgRRw0sc9bNgYUy9cw9TkVGYI/nAO6TbDg=";
           name = "launcher";
         };
