@@ -15,8 +15,8 @@ let
 
       aarch64-linux = {
         arch = "arm64";
-        launchersha256 = "";
-        osquerysha256 = "";
+        launchersha256 = "sha256-AAAAAAAA";
+        osquerysha256 = "sha256-AAAAAAAA";
       };
     };
 in
