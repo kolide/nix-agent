@@ -38,7 +38,7 @@ in
 
 stdenv.mkDerivation rec {
   pname = "kolide-launcher";
-  version = "1.12.3";
+  version = "1.17.0";
 
   src = sources.${system}.src;
   osqSrc = sources.${system}.osqSrc;
