@@ -10,13 +10,13 @@ let
     {
       x86_64-linux = {
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-1.12.3.tar.gz";
-          sha256 = "sha256-shJMPtz3txgRRw0sc9bNgYUy9cw9TkVGYI/nAO6TbDg=";
+          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-1.17.0.tar.gz";
+          sha256 = "sha256-SjUcNX1kQhI7ovhf6RhiAib+kR2R4QiHft7LSljU21k=";
           name = "launcher";
         };
         osqSrc = fetchzip {
-          url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.14.1.tar.gz";
-          sha256 = "sha256-rcmoXshD9pwaTN2dgJm9ZmuCuNQkPgLxghtMGYfhfYE=";
+          url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.16.0.tar.gz";
+          sha256 = "sha256-SU8zTTRF64+lv8ADeW/ydPRMDbRKvwCM03rQ+RcbWic=";
           name = "osqueryd";
         };
       };
@@ -28,7 +28,7 @@ let
           name = "launcher";
         };
         osqSrc = fetchzip {
-          url = "https://dl.kolide.co/kolide/osqueryd/linux/arm64/osqueryd-5.14.1.tar.gz";
+          url = "https://dl.kolide.co/kolide/osqueryd/linux/arm64/osqueryd-5.16.0.tar.gz";
           sha256 = "sha256-EJY4T7a5Af4jP3IIg/aeezzf9/TPwVw6FtLtG2Z/Idk=";
           name = "osqueryd";
         };
