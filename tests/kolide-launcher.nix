@@ -84,6 +84,10 @@ pkgs.nixosTest {
       if "${ci}":
         machine.start()
 
+        with subtest("why is backdoor.service not running"):
+          machine.sleep(60)
+          machine.systemctl("status backdoor.service")
+
         with subtest("mock agent server starts up"):
           machine.wait_for_unit("network-online.target")
           machine.wait_for_unit("uwsgi.service")
