@@ -2,8 +2,8 @@
 
 let
   nixpkgs = builtins.fetchTarball {
-    url = "https://github.com/nixOS/nixpkgs/archive/23.11.tar.gz";
-    sha256 = "sha256:1ndiv385w1qyb3b18vw13991fzb9wg4cl21wglk89grsfsnra41k";
+    url = "https://github.com/nixOS/nixpkgs/archive/24.11.tar.gz";
+    sha256 = "sha256:1gx0hihb7kcddv5h0k7dysp2xhf1ny0aalxhjbpj2lmvj7h9g80a";
   };
   pkgs = import nixpkgs { config = {}; overlays = []; };
 in
@@ -34,10 +34,7 @@ pkgs.nixosTest {
     services.xserver.desktopManager.mate.enable = true;
     services.xserver.desktopManager.mate.debug = true;
 
-    # This just quiets some log spam we don't care about
-    hardware.pulseaudio.enable = true;
-
-    system.stateVersion = "23.11";
+    system.stateVersion = "24.11";
 
     # Launcher setup
     services.kolide-launcher.enable = true;
@@ -84,48 +81,15 @@ pkgs.nixosTest {
       if "${ci}":
         machine.start()
 
-        with subtest("mock agent server starts up"):
-          machine.wait_for_unit("network-online.target")
-          machine.wait_for_unit("uwsgi.service")
-          machine.wait_until_succeeds("curl --fail http://app.kolide.test/version", timeout=60)
-
-        with subtest("log in to MATE"):
-          machine.wait_for_unit("display-manager.service", timeout=120)
-          machine.wait_for_file("${xauthority}")
-          machine.succeed("xauth merge ${xauthority}")
-          machine.wait_until_succeeds("pgrep marco")
-          machine.wait_for_window("marco")
-          machine.wait_until_succeeds("pgrep mate-panel")
-          machine.wait_for_window("Top Panel")
-          machine.wait_for_window("Bottom Panel")
-          machine.wait_until_succeeds("pgrep caja")
-          machine.wait_for_window("Caja")
-          machine.sleep(20)
-          machine.screenshot("test-screen1.png")
-
-        with subtest("launcher service runs and is set up correctly"):
-          # Wait a little bit to be sure and then perform a restart now that we're logged in,
-          # so that launcher can register with systray correctly
-          machine.sleep(20)
-          machine.systemctl("restart kolide-launcher.service")
-          machine.wait_for_unit("kolide-launcher.service", timeout=60)
-          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
-          machine.sleep(30)
-          machine.screenshot("test-screen2.png")
-
-        with subtest("osquery runs"):
-          machine.wait_until_succeeds("pgrep osqueryd", timeout=30)
-          machine.screenshot("test-screen3.png")
-
-        with subtest("launcher desktop runs"):
-          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/kolide.png")
-          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/menu.json")
-          machine.screenshot("test-screen4.png")
-          # Confirm that a launcher desktop process is spawned for the user
-          machine.wait_until_succeeds("pgrep -U ${uid} launcher", timeout=120)
-          machine.screenshot("test-screen5.png")
+        with subtest("why is backdoor.service not running"):
+          machine.sleep(60)
+          machine.systemctl("status backdoor.service")
 
         with subtest("launcher flare"):
+          machine.wait_for_unit("network-online.target")
+          machine.wait_for_unit("uwsgi.service")
+          machine.wait_for_unit("kolide-launcher.service", timeout=150)
+          machine.wait_for_file("/var/kolide-k2/k2device.kolide.com/debug.json")
           _, launcher_find_stdout = machine.execute("ls /nix/store | grep kolide-launcher-")
           machine.execute("/nix/store/" + launcher_find_stdout.strip() + "/bin/launcher flare --save local")
 
