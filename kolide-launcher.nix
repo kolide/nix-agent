@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   osqSrc = fetchzip {
     url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.18.1.tar.gz";
-    sha256 = "sha256-SU8zTTRF64+lv8ADeW/ydPRMDbRKvwCM03rQ+RcbWic=";
+    sha256 = "sha256-kozONOHLF+Z36ZSFI4IsRqpYi5A+TDS6qjBdewof83I=";
     name = "osqueryd";
   };
 
