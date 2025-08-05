@@ -6,7 +6,7 @@
 
 stdenv.mkDerivation rec {
   pname = "kolide-launcher";
-  version = "1.17.0";
+  version = "1.23.1";
 
   src = fetchzip {
     url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   osqSrc = fetchzip {
-    url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.16.0.tar.gz";
+    url = "https://dl.kolide.co/kolide/osqueryd/linux/amd64/osqueryd-5.18.1.tar.gz";
     sha256 = "sha256-SU8zTTRF64+lv8ADeW/ydPRMDbRKvwCM03rQ+RcbWic=";
     name = "osqueryd";
   };
