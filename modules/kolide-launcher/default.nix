@@ -16,7 +16,7 @@ in
     package = mkOption {
       type = types.package;
       default = pkgs.callPackage ../../kolide-launcher.nix { };
-      description = lib.mdDoc ''
+      description = ''
         The Kolide launcher agent package to use.
       '';
     };
