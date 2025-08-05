@@ -34,6 +34,5 @@ jobs:
 
     - name: calculate SRI hash for fetchzip
       run: |
-        nix-hash --type sha256 --to-sri $(nix-prefetch-url --type sha256 --unpack https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz)
-        cat /nix/store/*-launcher-* | openssl dgst -sha384 -binary | openssl base64 -A
-        cat /nix/store/*-launcher-* | openssl dgst -sha256 -binary | openssl base64 -A
+        downloadUrl="https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz"
+        nix-build -E "with import <nixpkgs> {}; fetchzip {url = \"$downloadUrl\"; sha256 = lib.fakeSha256; }"
