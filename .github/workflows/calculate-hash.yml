@@ -23,15 +23,16 @@ on:
           - arm64
 
 jobs:
-  validate:
+  calculate-hash:
     runs-on: ubuntu-latest
 
     steps:
 
-    - uses: cachix/install-nix-action@v22
+    - uses: cachix/install-nix-action@v31
       with:
-        nix_path: nixpkgs=channel:nixos-23.11
+        nix_path: nixpkgs=channel:nixos-24.11
 
     - name: calculate SRI hash for fetchzip
       run: |
-        nix-hash --type sha256 --to-sri $(nix-prefetch-url --unpack https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz)
+        downloadUrl="https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz"
+        nix-build -E "with import <nixpkgs> {}; fetchzip { url = \"$downloadUrl\"; sha256 = lib.fakeSha256; }"
