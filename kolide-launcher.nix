@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   src = fetchzip {
     url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-${version}.tar.gz";
-    sha256 = "sha256-cOppcheWqwHUnOj4ru7fvSyUkNdXLz8w4h+KG1BtLuk=";
+    sha256 = "sha256-nbfNnqV+Q7Mc54CAf7LxKUizByamfVqekPm2MjP53p4=";
     name = "launcher";
   };
 
