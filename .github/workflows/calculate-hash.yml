@@ -1,0 +1,38 @@
+name: calculate-hashes
+
+on:
+  workflow_dispatch:
+    inputs:
+      binary:
+        description: Which binary to calculate hash for?
+        required: true
+        type: choice
+        options:
+          - launcher
+          - osqueryd
+      version:
+        description: Which version?
+        required: true
+        type: string
+      arch:
+        description: Which arch?
+        required: true
+        type: choice
+        options:
+          - amd64
+          - arm64
+
+jobs:
+  calculate-hash:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-24.11
+
+    - name: calculate SRI hash for fetchzip
+      run: |
+        downloadUrl="https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz"
+        nix-build -E "with import <nixpkgs> {}; fetchzip { url = \"$downloadUrl\"; sha256 = lib.fakeSha256; }"
