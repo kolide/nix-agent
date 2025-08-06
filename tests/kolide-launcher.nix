@@ -2,8 +2,8 @@
 
 let
   nixpkgs = builtins.fetchTarball {
-    url = "https://github.com/nixOS/nixpkgs/archive/23.11.tar.gz";
-    sha256 = "sha256:1ndiv385w1qyb3b18vw13991fzb9wg4cl21wglk89grsfsnra41k";
+    url = "https://github.com/nixOS/nixpkgs/archive/24.11.tar.gz";
+    sha256 = "sha256:1gx0hihb7kcddv5h0k7dysp2xhf1ny0aalxhjbpj2lmvj7h9g80a";
   };
   pkgs = import nixpkgs { config = {}; overlays = []; };
 in
@@ -34,10 +34,7 @@ pkgs.nixosTest {
     services.xserver.desktopManager.mate.enable = true;
     services.xserver.desktopManager.mate.debug = true;
 
-    # This just quiets some log spam we don't care about
-    hardware.pulseaudio.enable = true;
-
-    system.stateVersion = "23.11";
+    system.stateVersion = "24.11";
 
     # Launcher setup
     services.kolide-launcher.enable = true;
