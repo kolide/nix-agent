@@ -46,6 +46,18 @@ jobs:
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
 
+    - name: show flake output attributes
+      run: nix flake show --impure
+
+    - name: show flake metadata
+      run: nix flake metadata
+
+    - name: launcher version
+      run: ./result/bin/launcher version
+
+    - name: osqueryd version
+      run: ./result/bin/osqueryd --version
+
     - name: check flake (runs tests)
       run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
       timeout-minutes: 15
@@ -74,15 +86,3 @@ jobs:
         name: test-flare
         path: ${{ steps.test-derivation.outputs.drvpath }}/kolide_agent_flare_report_*.zip
         retention-days: 1
-
-    - name: show flake output attributes
-      run: nix flake show --impure
-
-    - name: show flake metadata
-      run: nix flake metadata
-
-    - name: launcher version
-      run: ./result/bin/launcher version
-
-    - name: osqueryd version
-      run: ./result/bin/osqueryd --version
