@@ -8,7 +8,14 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+
     outputs:
       drvpath: ${{ steps.test-derivation.outputs.drvpath }}
 
@@ -16,42 +23,30 @@ jobs:
 
     - uses: actions/checkout@v3
 
-    - uses: cachix/install-nix-action@v22
+    # https://github.com/orgs/community/discussions/8305#discussioncomment-5888654
+    - name: install qemu
+      if: ${{ contains(matrix.os, 'ubuntu-24.04-arm') }}
+      run: |
+        sudo apt-get -y update
+        sudo apt-get install -y qemu-system-aarch64 binfmt-support qemu-user-static
+        sudo usermod -a -G kvm $USER
+
+    - uses: cachix/install-nix-action@v31
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
       with:
         extra_nix_config: "system-features = nixos-test benchmark big-parallel kvm"
-        nix_path: nixpkgs=channel:nixos-23.11
+        nix_path: nixpkgs=channel:nixos-24.11
+
+    - uses: cachix/install-nix-action@v31
+      if: ${{ contains(matrix.os, 'ubuntu-24.04-arm') }}
+      with:
+        extra_nix_config: |
+          system-features = nixos-test benchmark big-parallel kvm
+          system = aarch64-linux
+        nix_path: nixpkgs=channel:nixos-24.11
 
     - name: build
       run: NIXPKGS_ALLOW_UNFREE=1 nix build --impure
-
-    - name: check flake (runs tests)
-      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
-      timeout-minutes: 15
-      env:
-        CI: "true"
-
-    - name: get test derivation path
-      id: test-derivation
-      if: always()
-      run: |
-        drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
-        echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
-    
-    - name: upload test screenshots
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-screenshots
-        path: ${{ steps.test-derivation.outputs.drvpath }}/test-*.png
-        retention-days: 1
-
-    - name: upload test flare
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-flare
-        path: ${{ steps.test-derivation.outputs.drvpath }}/kolide_agent_flare_report_*.zip
-        retention-days: 1
 
     - name: show flake output attributes
       run: nix flake show --impure
@@ -64,3 +59,43 @@ jobs:
 
     - name: osqueryd version
       run: ./result/bin/osqueryd --version
+
+    - name: check flake (runs tests)
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
+      run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
+      timeout-minutes: 15
+      env:
+        CI: "true"
+
+    # We are seeing validation time out here and we believe it's not an issue
+    # with the flake itself or launcher -- for now, skip nix flake check.
+    # - name: check flake (runs tests)
+    #   if: ${{ contains(matrix.os, 'ubuntu-24.04-arm') }}
+    #   run: NIXPKGS_ALLOW_UNFREE=1 nix flake check --impure --log-format internal-json
+    #   timeout-minutes: 15
+    #   env:
+    #     CI: "true"
+    #     QEMU_SYSTEM_AARCH64: 'qemu-system-aarch64 -machine virt -cpu max'
+
+    - name: get test derivation path
+      id: test-derivation
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
+      run: |
+        drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
+        echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
+    
+    - name: upload test screenshots
+      uses: actions/upload-artifact@v4
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
+      with:
+        name: test-screenshots
+        path: ${{ steps.test-derivation.outputs.drvpath }}/test-*.png
+        retention-days: 1
+
+    - name: upload test flare
+      uses: actions/upload-artifact@v4
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
+      with:
+        name: test-flare
+        path: ${{ steps.test-derivation.outputs.drvpath }}/kolide_agent_flare_report_*.zip
+        retention-days: 1

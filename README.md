@@ -2,6 +2,9 @@
 
 Packages [kolide/launcher](https://github.com/kolide/launcher) for Nix.
 
+> [!NOTE]
+> Please note that the ARM64 version is in beta.
+
 ## Running kolide-launcher
 
 Include `kolide-launcher` in your `/etc/nixos/flake.nix` inputs:

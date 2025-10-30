@@ -13,14 +13,25 @@
       in
       pkgs.kolide-launcher;
 
+    packages.aarch64-linux.kolide-launcher =
+      let
+        pkgs = import nixpkgs {
+          system = "aarch64-linux";
+          overlays = [ self.overlays.default ];
+        };
+      in
+      pkgs.kolide-launcher;
+
     overlays.default = final: prev: {
       kolide-launcher = final.callPackage ./kolide-launcher.nix { };
     };
 
     packages.x86_64-linux.default = self.packages.x86_64-linux.kolide-launcher;
+    packages.aarch64-linux.default = self.packages.aarch64-linux.kolide-launcher;
 
     nixosModules.kolide-launcher = import ./modules/kolide-launcher;
 
     checks.x86_64-linux.kolide-launcher = import ./tests/kolide-launcher.nix { flake = self; };
+    checks.aarch64-linux.kolide-launcher = import ./tests/kolide-launcher.nix { flake = self; };
   };
 }
