@@ -2,7 +2,7 @@
 
 Packages [kolide/launcher](https://github.com/kolide/launcher) for Nix.
 
-> [!WARNING]
+> [!NOTE]
 > Please note that the ARM64 version is in beta.
 
 ## Running kolide-launcher
