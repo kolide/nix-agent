@@ -79,14 +79,14 @@ jobs:
 
     - name: get test derivation path
       id: test-derivation
-      if: always()
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
       run: |
         drvpath=$(ls -d /nix/store/*-vm-test-run-kolide-launcher)
         echo "drvpath=${drvpath}" >> "$GITHUB_OUTPUT" 
     
     - name: upload test screenshots
       uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
       with:
         name: test-screenshots
         path: ${{ steps.test-derivation.outputs.drvpath }}/test-*.png
@@ -94,7 +94,7 @@ jobs:
 
     - name: upload test flare
       uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ contains(matrix.os, 'ubuntu-latest') }}
       with:
         name: test-flare
         path: ${{ steps.test-derivation.outputs.drvpath }}/kolide_agent_flare_report_*.zip
