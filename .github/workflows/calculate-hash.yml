@@ -35,4 +35,10 @@ jobs:
     - name: calculate SRI hash for fetchzip
       run: |
         downloadUrl="https://dl.kolide.co/kolide/${{ github.event.inputs.binary }}/linux/${{ github.event.inputs.arch }}/${{ github.event.inputs.binary }}-${{ github.event.inputs.version }}.tar.gz"
-        nix-build -E "with import <nixpkgs> {}; fetchzip { url = \"$downloadUrl\"; sha256 = lib.fakeSha256; }"
+        BUILD_OUTPUT=$(nix-build -E "with import <nixpkgs> {}; fetchzip { url = \"$downloadUrl\"; sha256 = lib.fakeSha256; }" 2>&1 || true)
+        VERSION_HASH=$(echo "$BUILD_OUTPUT" | grep "got:" | awk '{print $2}' || echo "")
+        if [ -z "$VERSION_HASH" ]; then
+          echo "Failed to extract hash"
+          exit 1
+        fi
+        echo $VERSION_HASH
