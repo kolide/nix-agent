@@ -5,9 +5,6 @@ on:
     # Run at 12:00 PM UTC every day
     - cron: '0 12 * * *'
   workflow_dispatch:  # Allow manual triggering
-  # TODO RM: Remove this trigger before merging -- for testing only
-  pull_request:
-    branches: '**'
 
 jobs:
   check-for-pr:
