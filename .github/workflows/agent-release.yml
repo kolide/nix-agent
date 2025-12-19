@@ -24,7 +24,7 @@ jobs:
         id: find-tag
         run: |
           # We always expect to find a tag, so we don't need to check for an empty list
-          RELEASE=$(gh release list --repo kolide/launcher --limit 1 --order desc --json tagName)
+          RELEASE=$(gh release list --repo kolide/launcher --limit 1 --order desc --json tagName --exclude-drafts --exclude-pre-releases)
           TAG=$(echo "$RELEASE" | jq -r '.[0].tagName')
           VERSION="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
