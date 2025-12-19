@@ -39,7 +39,7 @@ jobs:
         run: |
           VERSION="${{ steps.find-tag.outputs.version }}"
           
-          EXISTING_PR=$(gh pr list --state all --search "[Automated Release] Update launcher to $VERSION" --json number -q '.[0].number // empty' || echo "")
+          EXISTING_PR=$(gh pr list --repo kolide/nix-agent --state all --search "[Automated Release] Update launcher to $VERSION" --json number -q '.[0].number // empty' || echo "")
           
           if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
             echo "PR already exists for version $VERSION (PR #$EXISTING_PR)"
