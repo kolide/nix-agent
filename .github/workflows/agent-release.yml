@@ -126,7 +126,8 @@ jobs:
         run: |
           VERSION="${{ needs.check-for-pr.outputs.version }}"
           TAG="${{ needs.check-for-pr.outputs.tag }}"
-          BRANCH_NAME="update-launcher-${VERSION}"
+          TIMESTAMP=$(date +%s)
+          BRANCH_NAME="update-launcher-${VERSION}-${TIMESTAMP}"
           
           git checkout -b "$BRANCH_NAME"
           git add kolide-launcher.nix
