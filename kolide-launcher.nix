@@ -10,8 +10,8 @@ let
     {
       x86_64-linux = {
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-1.31.7.tar.gz";
-          sha256 = "sha256-qcDN+YgMdDImdOu/kEUFCBBZGf0yV26/ZP/55uq5lTs=";
+          url = "https://dl.kolide.co/kolide/launcher/linux/amd64/launcher-1.32.1.tar.gz";
+          sha256 = "sha256-rln9naQenxGwwodDJdBI0F9LZBBIEtZjzdSQXfDrs8A=";
           name = "launcher";
         };
         osqSrc = fetchzip {
@@ -23,8 +23,8 @@ let
 
       aarch64-linux = {
         src = fetchzip {
-          url = "https://dl.kolide.co/kolide/launcher/linux/arm64/launcher-1.31.7.tar.gz";
-          sha256 = "sha256-HYcwlTlK442E1sZ0Ytkrf32V86EOAiXA7EIi7Oq0fVQ=";
+          url = "https://dl.kolide.co/kolide/launcher/linux/arm64/launcher-1.32.1.tar.gz";
+          sha256 = "sha256-xRTuWlkZl8Mjsz7/76btn/EswHII3hlLYgwF2RWgs8U=";
           name = "launcher";
         };
         osqSrc = fetchzip {
@@ -38,7 +38,7 @@ in
 
 stdenv.mkDerivation rec {
   pname = "kolide-launcher";
-  version = "1.31.7";
+  version = "1.32.1";
 
   src = sources.${system}.src;
   osqSrc = sources.${system}.osqSrc;
