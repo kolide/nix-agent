@@ -162,10 +162,6 @@ jobs:
             gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" \
             /repos/kolide/nix-agent/git/refs --input -
           
-          # TODO RM -- still needed?
-          # git remote set-url origin "https://github.com/kolide/nix-agent.git"
-          # git push origin "$BRANCH_NAME"
-          
           gh pr create \
             --repo kolide/nix-agent \
             --title "[Automated Release] Update launcher to ${VERSION}" \
