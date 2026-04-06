@@ -125,13 +125,46 @@ jobs:
           TAG="${{ needs.check-for-pr.outputs.tag }}"
           TIMESTAMP=$(date +%s)
           BRANCH_NAME="update-launcher-${VERSION}-${TIMESTAMP}"
+          BASE_TREE=$(git rev-parse HEAD)
+          KOLIDE_LAUNCHER_NIX_SHA=$(git hash-object kolide-launcher.nix)
+          echo $KOLIDE_LAUNCHER_NIX_SHA
+          COMMIT_MESSAGE="[Automated Release] Update launcher to ${VERSION}"
           
           git checkout -b "$BRANCH_NAME"
           git add kolide-launcher.nix
-          git commit -m "[Automated Release] Update launcher to ${VERSION}"
+          git commit -m "$COMMIT_MESSAGE"
+
+          # For the github-actions bot's commits to be signed, we need to use the GH API
+          # to create a tree, a commit, and a reference.
+          # See: https://github.com/orgs/community/discussions/50055
+
+          # Create tree
+          CREATE_TREE_RESP=$(jq -n \
+            --arg base_tree "$BASE_TREE" \
+            --arg sha "$KOLIDE_LAUNCHER_NIX_SHA" \
+            '{base_tree: $base_tree, tree: [{path: "kolide-launcher.nix", mode: "100644", type: "blob", sha: $sha}]}' | \
+            gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" \
+            /repos/kolide/nix-agent/git/trees --input -)
+          TREE_SHA=$(echo "$CREATE_TREE_RESP" | jq -r '.sha')
+
+          # Create commit
+          CREATE_COMMIT_RESP=$(jq -n \
+            --arg message "$COMMIT_MESSAGE" \
+            --arg parent "$BASE_TREE" \
+            --arg tree "$TREE_SHA" \
+            '{message: $message, parents: [$parent], tree: $tree}' | \
+            gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" \
+            /repos/kolide/nix-agent/git/commits --input -)
+          COMMIT_SHA=$(echo "$CREATE_COMMIT_RESP" | jq -r '.sha')
+
+          # Create reference
+          jq -n --arg sha "$COMMIT_SHA" --arg branch "refs/heads/$BRANCH_NAME" '{sha: $sha, ref: $branch}' | \
+            gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" \
+            /repos/kolide/nix-agent/git/refs --input -
           
-          git remote set-url origin "https://github.com/kolide/nix-agent.git"
-          git push origin "$BRANCH_NAME"
+          # TODO RM -- still needed?
+          # git remote set-url origin "https://github.com/kolide/nix-agent.git"
+          # git push origin "$BRANCH_NAME"
           
           gh pr create \
             --repo kolide/nix-agent \
