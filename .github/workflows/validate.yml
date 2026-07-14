@@ -21,7 +21,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
 
     # https://github.com/orgs/community/discussions/8305#discussioncomment-5888654
     - name: install qemu

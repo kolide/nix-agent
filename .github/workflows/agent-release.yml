@@ -83,7 +83,7 @@ jobs:
           fi
           echo "arm64_hash=$ARM64_HASH" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           path: nix-agent
