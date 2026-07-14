@@ -2,7 +2,7 @@
   description = "Kolide launcher";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
 
     flake-compat = {
       url = "github:NixOS/flake-compat";
