@@ -31,13 +31,13 @@ jobs:
         sudo apt-get install -y qemu-system-aarch64 binfmt-support qemu-user-static
         sudo usermod -a -G kvm $USER
 
-    - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v37.10.7
+    - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
       if: ${{ contains(matrix.os, 'ubuntu-latest') }}
       with:
         extra_nix_config: "system-features = nixos-test benchmark big-parallel kvm"
         nix_path: nixpkgs=channel:nixos-26.05
 
-    - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v37.10.7
+    - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
       if: ${{ contains(matrix.os, 'ubuntu-24.04-arm') }}
       with:
         extra_nix_config: |
