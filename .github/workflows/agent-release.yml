@@ -6,6 +6,9 @@ on:
     - cron: '0 12 * * *'
   workflow_dispatch:  # Allow manual triggering
 
+permissions:
+  contents: read
+
 jobs:
   check-for-pr:
     runs-on: ubuntu-latest
@@ -17,6 +20,11 @@ jobs:
       tag: ${{ steps.find-tag.outputs.tag }}
       pr_exists: ${{ steps.check-for-pr.outputs.pr_exists }}
     steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit # Audit network and disk activity
+
       - name: Find most recent tag from kolide/launcher
         id: find-tag
         env:
@@ -53,6 +61,11 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit # Audit network and disk activity
+
       - name: Install Nix
         uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
         with:
@@ -83,7 +96,7 @@ jobs:
           fi
           echo "arm64_hash=$ARM64_HASH" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           path: nix-agent
