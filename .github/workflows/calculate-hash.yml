@@ -22,11 +22,19 @@ on:
           - amd64
           - arm64
 
+permissions:
+  contents: read
+
 jobs:
   calculate-hash:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Harden runner
+      uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+      with:
+        egress-policy: audit # Audit network and disk activity
 
     - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
       with:
